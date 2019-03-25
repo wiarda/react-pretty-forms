@@ -1,5 +1,5 @@
 /* eslint-disable */
-import React from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 
 // import Loader from './Loader';
@@ -56,7 +56,7 @@ export default function Form({ children, ...props }) {
 
     console.log('Attaching initial values and input refs');
     const initialValues = parseParameters();
-    formElements = React.Children.map(children, child => {
+    formElements.current = React.Children.map(children, child => {
       const childProps = {};
       const fieldName = child.props && child.props.name;
 
@@ -172,16 +172,16 @@ export default function Form({ children, ...props }) {
         encType={encType}
       >
         <div className="form--loading-text" data-formstate={formState}>
-          <Loader spinner>Registering</Loader>
+          {/* <Loader spinner>Registering</Loader> */}
         </div>
         <div className="form--resolved-text" data-formstate={formState}>
-          {thankyouMessage}
+          {/* {thankyouMessage} */}
         </div>
         <div className="form--failed-text" data-formstate={formState}>
-          <Retry submitHandler={submitHandler} formState={formState} />
+          {/* <Retry submitHandler={submitHandler} formState={formState} /> */}
         </div>
 
-        {formElements}
+        {formElements.current}
       </form>
     </a>
   );
