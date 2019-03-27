@@ -3,7 +3,7 @@ import React, { useRef, useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 
 // import Loader from './Loader';
-// import FormField from './FormField';
+import FormField from './FormField';
 import FormFieldFile from './FormFieldFile';
 import FormFieldPretty from './FormFieldPretty';
 import FormButton from './FormButton';
@@ -12,32 +12,36 @@ import FormCheckbox from './FormCheckbox';
 // import Retry from './FormRetry';
 
 // const INPUT_TYPES = [FormField, FormFieldFile, FormFieldPretty, FormSelectPretty, FormCheckbox];
-const INPUT_TYPES = [FormFieldFile, FormFieldPretty, FormSelectPretty, FormCheckbox];
+const INPUT_TYPES = [
+  FormFieldFile.toString(),
+  FormFieldPretty.toString(),
+  FormSelectPretty.toString(),
+  FormCheckbox.toString(),
+];
 
 /**
- * formId = the form id used by the db
- * title = the form's title text
- * action = api endpoint to submit form
- * accepts url parameters to prefill form, as well as a source parameter
+ * accepts url parameters to prefill form
+ * action: api endpoint to submit form
  * to track link sources
  */
 export default function Form({ children, ...props }) {
   const inputRefs = useRef({});
   const fieldNames = useRef([]);
-  const formElements = useRef([]);
+  const [formState, setFormState] = useState('active');
+  const [formElements, setFormElements] = useState(null);
 
   useEffect(() => {
     // generate refs for input fields
-    console.log('Generating input refs');
     children.forEach(child => {
-      if (INPUT_TYPES.includes(child.type)) {
+      if (INPUT_TYPES.includes(child.type.toString())) {
         const fieldName = child.props && child.props.name;
-        inputRefs[fieldName] = React.createRef();
-        fieldNames.push(fieldName);
+        inputRefs.current[fieldName] = React.createRef();
+        fieldNames.current.push(fieldName);
       }
     });
+    console.log('Generating input refs:', inputRefs);
 
-    // add parameters
+    // prefill query parameters
     const parseParameters = () => {
       if (typeof window !== 'undefined') {
         const rawParams = window.location.search.slice(1);
@@ -56,40 +60,49 @@ export default function Form({ children, ...props }) {
 
     console.log('Attaching initial values and input refs');
     const initialValues = parseParameters();
-    formElements.current = React.Children.map(children, child => {
+    console.log('initial values:', initialValues);
+    const formElements = React.Children.map(children, child => {
       const childProps = {};
       const fieldName = child.props && child.props.name;
 
+      console.log('child.type:', child.type.prototype);
+      console.log(child instanceof FormFieldPretty);
+      console.log(child.type.prototype instanceof FormFieldPretty);
       // add refs and initial values to inputs
-      if (INPUT_TYPES.includes(child.type)) {
+      if (INPUT_TYPES.includes(child.type.toString())) {
+        console.log(
+          'attaching ref and initial to a field:',
+          fieldName,
+          inputRefs.current[fieldName],
+          initialValues[fieldName]
+        );
         childProps.initialValue = initialValues[fieldName] || child.props.initialValue;
-        childProps.ref = inputRefs[fieldName];
+        childProps.ref = inputRefs.current[fieldName];
       }
 
       // add submit handler to submit button
-      if (child.type === FormButton) {
+      if (child.type.toString() === FormButton.toString()) {
         childProps.submitHandler = submitHandler;
         // childProps.submitHandler = testRedirect;
       }
 
       return React.cloneElement(child, { ...childProps });
     });
+    console.log(formElements);
+    setFormElements(formElements);
   }, [children].length);
-
-  // initiate form state
-  const { formState, setFormState } = useState('active');
 
   const getInputValues = () => {
     const currentValues = {};
-    fieldNames.forEach(fieldName => {
-      currentValues[fieldName] = inputRefs[fieldName].current.getValue();
+    fieldNames.current.forEach(fieldName => {
+      currentValues[fieldName] = inputRefs.current[fieldName].current.getValue();
     });
     return currentValues;
   };
 
   const validateEntries = () => {
     // check validity of inputs and return true if all pass
-    return Object.values(inputRefs).reduce((acc, curr) => {
+    return Object.values(inputRefs.current).reduce((acc, curr) => {
       const currentValidation = curr.current.validate();
       return acc && currentValidation;
     }, true);
@@ -113,9 +126,11 @@ export default function Form({ children, ...props }) {
 
     // gather form values for submission
     const formValues = {};
-    fieldNames.forEach(fieldName => {
-      formValues[fieldName] = inputRefs[fieldName].current.getValue();
+    fieldNames.current.forEach(fieldName => {
+      formValues[fieldName] = inputRefs.current[fieldName].current.getValue();
     });
+
+    console.log(formValues);
 
     // check for custom submit
     const submit = props.submit || defaultSubmit;
@@ -181,7 +196,7 @@ export default function Form({ children, ...props }) {
           {/* <Retry submitHandler={submitHandler} formState={formState} /> */}
         </div>
 
-        {formElements.current}
+        {formElements}
       </form>
     </a>
   );
