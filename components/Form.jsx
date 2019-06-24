@@ -1,205 +1,214 @@
 /* eslint-disable */
-import React, { useRef, useState, useEffect } from 'react';
-import PropTypes from 'prop-types';
+const React = require('react');
+const PropTypes = require('prop-types');
 
-// import Loader from './Loader';
-import FormField from './FormField';
-import FormFieldFile from './FormFieldFile';
-import FormFieldPretty from './FormFieldPretty';
-import FormButton from './FormButton';
-import FormSelectPretty from './FormSelectPretty';
-import FormCheckbox from './FormCheckbox';
-// import Retry from './FormRetry';
+// import FormField from './FormField';
+const FormFieldFile = require('./FormFieldFile');
+const FormFieldPretty = require('./FormFieldPretty');
+const FormButton = require('./FormButton');
+const FormSelectPretty = require('./FormSelectPretty');
+const FormCheckbox = require('./FormCheckbox');
+const Loader = require('./Loader');
+const Retry = require('./Retry');
 
-// const INPUT_TYPES = [FormField, FormFieldFile, FormFieldPretty, FormSelectPretty, FormCheckbox];
-const INPUT_TYPES = [
-  FormFieldFile.toString(),
-  FormFieldPretty.toString(),
-  FormSelectPretty.toString(),
-  FormCheckbox.toString(),
-];
+const INPUT_TYPES = [FormFieldFile, FormFieldPretty, FormSelectPretty, FormCheckbox];
 
 /**
- * accepts url parameters to prefill form
- * action: api endpoint to submit form
+ * title = the form's title text
+ * action = api endpoint to submit form
+ * accepts url parameters to prefill form, as well as a source parameter
  * to track link sources
  */
-export default function Form({ children, ...props }) {
-  const inputRefs = useRef({});
-  const fieldNames = useRef([]);
-  const [formState, setFormState] = useState('active');
-  const [formElements, setFormElements] = useState(null);
+class Form extends React.PureComponent {
+  constructor(props) {
+    super(props);
 
-  useEffect(() => {
+    // methods
+    this.submitHandler = this.submitHandler.bind(this);
+    this.defaultSubmit = this.defaultSubmit.bind(this);
+    this.validateEntries = this.validateEntries.bind(this);
+    this.getInputValues = this.getInputValues.bind(this);
+    this.cloneChildren = this.cloneChildren.bind(this);
+
     // generate refs for input fields
-    children.forEach(child => {
-      if (INPUT_TYPES.includes(child.type.toString())) {
+    this.inputRefs = {};
+    this.fieldNames = [];
+
+    props.children.forEach(child => {
+      if (INPUT_TYPES.includes(child.type)) {
         const fieldName = child.props && child.props.name;
-        inputRefs.current[fieldName] = React.createRef();
-        fieldNames.current.push(fieldName);
+        this.inputRefs[fieldName] = React.createRef();
+        this.fieldNames.push(fieldName);
       }
     });
-    console.log('Generating input refs:', inputRefs);
 
-    // prefill query parameters
-    const parseParameters = () => {
-      if (typeof window !== 'undefined') {
-        const rawParams = window.location.search.slice(1);
-        const params = new URLSearchParams(rawParams);
-        const initialValues = {};
+    // parse uri parameters
+    this.initialValues = parseParameters();
 
-        for (let param of params) {
-          const [name, value] = param;
-          initialValues[name] = value;
-        }
+    // generate Form Components
+    this.FormElements = this.cloneChildren();
 
-        return initialValues;
-      }
-      return {};
-    };
+    // initiate form state
+    this.state = { formState: 'active' };
+  }
 
-    console.log('Attaching initial values and input refs');
-    const initialValues = parseParameters();
-    console.log('initial values:', initialValues);
-    const formElements = React.Children.map(children, child => {
+  getInputValues() {
+    const currentValues = {};
+    this.fieldNames.forEach(fieldName => {
+      currentValues[fieldName] = this.inputRefs[fieldName].current.getValue();
+    });
+    return currentValues;
+  }
+
+  cloneChildren() {
+    const { children, styles } = this.props;
+
+    return React.Children.map(children, child => {
       const childProps = {};
       const fieldName = child.props && child.props.name;
 
-      console.log('child.type:', child.type.prototype);
-      console.log(child instanceof FormFieldPretty);
-      console.log(child.type.prototype instanceof FormFieldPretty);
       // add refs and initial values to inputs
-      if (INPUT_TYPES.includes(child.type.toString())) {
-        console.log(
-          'attaching ref and initial to a field:',
-          fieldName,
-          inputRefs.current[fieldName],
-          initialValues[fieldName]
-        );
-        childProps.initialValue = initialValues[fieldName] || child.props.initialValue;
-        childProps.ref = inputRefs.current[fieldName];
+      if (INPUT_TYPES.includes(child.type)) {
+        childProps.initialValue = this.initialValues[fieldName] || child.props.initialValue;
+        childProps.ref = this.inputRefs[fieldName];
       }
 
       // add submit handler to submit button
-      if (child.type.toString() === FormButton.toString()) {
-        childProps.submitHandler = submitHandler;
-        // childProps.submitHandler = testRedirect;
+      if (child.type === FormButton) {
+        childProps.submitHandler = this.submitHandler;
       }
+
+      // pass on CSS module
+      childProps.styles = styles;
 
       return React.cloneElement(child, { ...childProps });
     });
-    console.log(formElements);
-    setFormElements(formElements);
-  }, [children].length);
+  }
 
-  const getInputValues = () => {
-    const currentValues = {};
-    fieldNames.current.forEach(fieldName => {
-      currentValues[fieldName] = inputRefs.current[fieldName].current.getValue();
-    });
-    return currentValues;
-  };
-
-  const validateEntries = () => {
+  validateEntries() {
     // check validity of inputs and return true if all pass
-    return Object.values(inputRefs.current).reduce((acc, curr) => {
+    return Object.values(this.inputRefs).reduce((acc, curr) => {
       const currentValidation = curr.current.validate();
       return acc && currentValidation;
     }, true);
-  };
+  }
 
-  const defaultSubmit = (action, formValues) => {
+  defaultSubmit(action, formValues) {
     console.log('default submit');
     return fetch(action, {
       method: 'POST',
       body: JSON.stringify(formValues),
     });
-  };
+  }
 
-  const submitHandler = e => {
+  submitHandler(e) {
     e.preventDefault();
     console.log('form submit handler');
 
     // check for validity
-    const isFormValid = validateEntries();
+    const isFormValid = this.validateEntries();
     if (!isFormValid) return;
 
     // gather form values for submission
     const formValues = {};
-    fieldNames.current.forEach(fieldName => {
-      formValues[fieldName] = inputRefs.current[fieldName].current.getValue();
+    this.fieldNames.forEach(fieldName => {
+      formValues[fieldName] = this.inputRefs[fieldName].current.getValue();
     });
 
-    console.log(formValues);
+    // pass cookies as a form value b/c firebase functions strips all cookies besides __session
+    formValues.cookie = document.cookie;
 
     // check for custom submit
-    const submit = props.submit || defaultSubmit;
+    const submit = this.props.submit || this.defaultSubmit;
 
     // submit
-    const { action } = props;
+    const { action } = this.props;
     submit(action, formValues)
       .then(result => {
         // console.log(result);
-        setFormState('resolved');
+        this.setState({ formState: 'resolved' });
       })
       .catch(err => {
         console.error(err);
-        setFormState('failed');
+        this.setState({ formState: 'failed' });
       });
-    setFormState('loading');
-  };
+    this.setState({ formState: 'loading' });
+  }
 
-  const testRedirect = () => {
-    console.log('testing redirect');
-    setFormState('resolved');
-  };
+  componentDidMount() {
+    const { wakeup, action } = this.props;
 
-  //   componentDidMount() {
-  //     const { action, wakeup } = props;
+    // wake submission endpoint
+    if (wakeup) {
+      // remove replace silent / notify with wake
+      fetch(`${action.slice(0, -6)}wakeup`, { method: 'POST' })
+        .then(result => console.log('Endpoint woken'))
+        .catch(err => console.log('Endpoint unreachable.'));
+    }
+  }
 
-  //     // wake submission endpoint
-  //     if (wakeup) {
-  //       console.log('Form mounted, waking up submission endpoint:', action);
-  //       fetch(action, { method: 'POST' })
-  //         .then(result => console.log(result))
-  //         .catch(err => console.log('Endpoint unreachable.'));
-  //     }
-  //   }
+  componentDidUpdate() {
+    const { formState } = this.state;
+    if (formState === 'resolved') {
+      // redirect to the webinar recording
+    }
+  }
 
-  //   componentDidUpdate() {
-  //
-  //     if (formState === 'resolved') {
-  //       // redirect to the webinar recording
+  render() {
+    const { action, thankyouMessage, className, encType, multiple, styles = {} } = this.props;
+    const { formState } = this.state;
 
-  //     }
-  //   }
+    return (
+      <a name="form">
+        <form
+          className={styles.form || `${className} registration--form`}
+          action={action}
+          method="post"
+          data-formstate={formState}
+          onChange={this.getInputValues}
+          encType={encType}
+        >
+          <div
+            className={styles.formLoadingText || 'form--loading-text'}
+            data-formstate={formState}
+          >
+            <Loader spinner>Registering</Loader>
+          </div>
+          <div
+            className={styles.formResolvedText || 'form--resolved-text'}
+            data-formstate={formState}
+          >
+            {thankyouMessage}
+          </div>
+          <div className={styles.formFailedText || 'form--failed-text'} data-formstate={formState}>
+            <Retry submitHandler={this.submitHandler} formState={formState} />
+          </div>
 
-  const { action, thankyouMessage, className, encType, multiple } = props;
+          {this.FormElements}
+        </form>
+      </a>
+    );
+  }
+}
 
-  return (
-    <a name="form">
-      <form
-        className={`${className} registration--form`}
-        action={action}
-        method="post"
-        data-formstate={formState}
-        onChange={getInputValues}
-        encType={encType}
-      >
-        <div className="form--loading-text" data-formstate={formState}>
-          {/* <Loader spinner>Registering</Loader> */}
-        </div>
-        <div className="form--resolved-text" data-formstate={formState}>
-          {/* {thankyouMessage} */}
-        </div>
-        <div className="form--failed-text" data-formstate={formState}>
-          {/* <Retry submitHandler={submitHandler} formState={formState} /> */}
-        </div>
+function parseParameters() {
+  if (typeof window !== 'undefined') {
+    try {
+      const rawParams = window.location.search.slice(1);
+      const params = new URLSearchParams(rawParams);
+      const initialValues = {};
 
-        {formElements}
-      </form>
-    </a>
-  );
+      for (let param of params) {
+        const [name, value] = param;
+        initialValues[name] = value;
+      }
+
+      return initialValues;
+    } catch (err) {
+      console.log('Search parameters not supported in this browser version.')
+    }
+  }
+  return {};
 }
 
 Form.propTypes = {
@@ -208,13 +217,15 @@ Form.propTypes = {
   className: PropTypes.string,
   submit: PropTypes.func,
   encType: PropTypes.string,
-  wakeup: PropTypes.bool.isRequired,
+  wakeup: PropTypes.bool,
   toggleRegistration: PropTypes.func,
+  styles: PropTypes.object,
 };
 
 Form.defaultProps = {
-  thankyouMessage: <span>Thank you for registering!</span>,
+  thankyouMessage: <span>Thank you!</span>,
   className: '',
   encType: '',
-  wakeup: false,
 };
+
+module.exports = Form;
