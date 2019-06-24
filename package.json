@@ -1,7 +1,7 @@
 {
   "name": "react-pretty-forms",
-  "version": "1.0.0",
-  "description": "A set of React components to create pretty forms that work with or without JS enabled.",
+  "version": "0.0.1",
+  "description": "Easy to style React forms that behave well in no-JS environments.",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -10,12 +10,14 @@
   "license": "ISC",
   "dependencies": {
     "prop-types": "^15.7.2",
-    "react": "^16.8.4"
+    "react": "^16.8.6",
+    "validator": "^11.0.0"
   },
   "devDependencies": {
-    "eslint": "^5.15.3",
+    "eslint": "^5.16.0",
     "eslint-config-airbnb": "^17.1.0",
     "eslint-config-airbnb-base": "^13.1.0",
+    "eslint-plugin-import": "^2.17.3",
     "eslint-plugin-jsx-a11y": "^6.2.1",
     "eslint-plugin-react": "^7.12.4",
     "prettier": "^1.16.4"
