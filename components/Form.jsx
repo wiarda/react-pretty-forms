@@ -2,16 +2,23 @@
 const React = require('react');
 const PropTypes = require('prop-types');
 
-// import FormField from './FormField';
 const FormFieldFile = require('./FormFieldFile');
 const FormFieldPretty = require('./FormFieldPretty');
 const FormButton = require('./FormButton');
 const FormSelectPretty = require('./FormSelectPretty');
 const FormCheckbox = require('./FormCheckbox');
+const FormStateWrapper = require('./FormStateWrapper');
 const Loader = require('./Loader');
 const Retry = require('./Retry');
 
+const FormResolved = require('./FormResolved');
+
 const INPUT_TYPES = [FormFieldFile, FormFieldPretty, FormSelectPretty, FormCheckbox];
+const FORM_STATE_COMPONENTS = [FormStateWrapper, FormResolved]
+
+// ToDo: Standardize form states and include as a data prop on the form to enable easier CSS styling off it
+// include cookies in form as a setting
+
 
 /**
  * title = the form's title text
@@ -30,10 +37,12 @@ class Form extends React.PureComponent {
     this.getInputValues = this.getInputValues.bind(this);
     this.cloneChildren = this.cloneChildren.bind(this);
 
+    // initiate form state
+    this.state = { formState: 'active' };
+
     // generate refs for input fields
     this.inputRefs = {};
     this.fieldNames = [];
-
     props.children.forEach(child => {
       if (INPUT_TYPES.includes(child.type)) {
         const fieldName = child.props && child.props.name;
@@ -44,12 +53,6 @@ class Form extends React.PureComponent {
 
     // parse uri parameters
     this.initialValues = parseParameters();
-
-    // generate Form Components
-    this.FormElements = this.cloneChildren();
-
-    // initiate form state
-    this.state = { formState: 'active' };
   }
 
   getInputValues() {
@@ -62,6 +65,7 @@ class Form extends React.PureComponent {
 
   cloneChildren() {
     const { children, styles } = this.props;
+    this.firstRender = false;
 
     return React.Children.map(children, child => {
       const childProps = {};
@@ -78,8 +82,13 @@ class Form extends React.PureComponent {
         childProps.submitHandler = this.submitHandler;
       }
 
-      // pass on CSS module
+      // pass on CSS modules
       childProps.styles = styles;
+
+      // pass on form state to Form State Components
+      if (FORM_STATE_COMPONENTS.includes(child.type)) {
+        childProps.formState = this.state.formState;
+      }
 
       return React.cloneElement(child, { ...childProps });
     });
@@ -115,7 +124,7 @@ class Form extends React.PureComponent {
       formValues[fieldName] = this.inputRefs[fieldName].current.getValue();
     });
 
-    // pass cookies as a form value b/c firebase functions strips all cookies besides __session
+    // pass cookies as a form value b/c cloud functions strip cookies (other than __session) from request
     formValues.cookie = document.cookie;
 
     // check for custom submit
@@ -147,15 +156,8 @@ class Form extends React.PureComponent {
     }
   }
 
-  componentDidUpdate() {
-    const { formState } = this.state;
-    if (formState === 'resolved') {
-      // redirect to the webinar recording
-    }
-  }
-
   render() {
-    const { action, thankyouMessage, className, encType, multiple, styles = {} } = this.props;
+    const { action, thankyouMessage, className, encType, styles = {} } = this.props;
     const { formState } = this.state;
 
     return (
@@ -164,28 +166,32 @@ class Form extends React.PureComponent {
           className={styles.form || `${className} registration--form`}
           action={action}
           method="post"
-          data-formstate={formState}
+          data-formstatus={formState}
           onChange={this.getInputValues}
           encType={encType}
         >
-          <div
+          {/* <div
             className={styles.formLoadingText || 'form--loading-text'}
-            data-formstate={formState}
+            data-formstatus={formState}
           >
             <Loader spinner>Registering</Loader>
           </div>
           <div
             className={styles.formResolvedText || 'form--resolved-text'}
-            data-formstate={formState}
+            data-formstatus={formState}
           >
             {thankyouMessage}
           </div>
-          <div className={styles.formFailedText || 'form--failed-text'} data-formstate={formState}>
+          <div className={styles.formFailedText || 'form--failed-text'} data-formstatus={formState}>
             <Retry submitHandler={this.submitHandler} formState={formState} />
-          </div>
+          </div> */}
 
-          {this.FormElements}
+          {this.cloneChildren()}
         </form>
+        <div onClick={() => { this.setState({ formState: 'active' }) }}>Active</div>
+        <div onClick={() => { this.setState({ formState: 'loading' }) }}>Loading</div>
+        <div onClick={() => { this.setState({ formState: 'failed' }) }}>Failed</div>
+        <div onClick={() => { this.setState({ formState: 'resolved' }) }}>Resolved</div>
       </a>
     );
   }
