@@ -7,14 +7,15 @@ const FormFieldPretty = require('./FormFieldPretty');
 const FormButton = require('./FormButton');
 const FormSelectPretty = require('./FormSelectPretty');
 const FormCheckbox = require('./FormCheckbox');
-const FormStateWrapper = require('./FormStateWrapper');
-const Loader = require('./Loader');
-const Retry = require('./Retry');
+const FormStatusWrapper = require('./FormStateWrapper');
 
-const FormResolved = require('./FormResolved');
+const OnResolved = require('./OnResolved');
+const OnFailed = require('./OnFailed');
+const OnSubmitting = require('./OnSubmitting');
+const OnActive = require('./OnActive');
 
 const INPUT_TYPES = [FormFieldFile, FormFieldPretty, FormSelectPretty, FormCheckbox];
-const FORM_STATE_COMPONENTS = [FormStateWrapper, FormResolved]
+const FORM_STATE_COMPONENTS = [FormStatusWrapper, OnResolved, OnFailed, OnSubmitting, OnActive]
 
 // ToDo: Standardize form states and include as a data prop on the form to enable easier CSS styling off it
 // include cookies in form as a setting
@@ -36,23 +37,19 @@ class Form extends React.PureComponent {
     this.validateEntries = this.validateEntries.bind(this);
     this.getInputValues = this.getInputValues.bind(this);
     this.cloneChildren = this.cloneChildren.bind(this);
+    this.processChildren = this.processChildren.bind(this);
+    this.generateRefs = this.generateRefs.bind(this);
 
     // initiate form state
     this.state = { formState: 'active' };
 
+    // parse parameter values
+    this.initialValues = parseParameters();
+
     // generate refs for input fields
     this.inputRefs = {};
     this.fieldNames = [];
-    props.children.forEach(child => {
-      if (INPUT_TYPES.includes(child.type)) {
-        const fieldName = child.props && child.props.name;
-        this.inputRefs[fieldName] = React.createRef();
-        this.fieldNames.push(fieldName);
-      }
-    });
-
-    // parse uri parameters
-    this.initialValues = parseParameters();
+    React.Children.forEach(props.children, this.generateRefs);
   }
 
   getInputValues() {
@@ -63,35 +60,52 @@ class Form extends React.PureComponent {
     return currentValues;
   }
 
-  cloneChildren() {
-    const { children, styles } = this.props;
-    this.firstRender = false;
-
-    return React.Children.map(children, child => {
-      const childProps = {};
+  generateRefs(child) {
+    if (INPUT_TYPES.includes(child.type)) {
       const fieldName = child.props && child.props.name;
+      this.inputRefs[fieldName] = React.createRef();
+      this.fieldNames.push(fieldName);
+    }
+    if (child.type === OnActive) {
+      React.Children.forEach(child.props.children, this.generateRefs)
+    }
+  }
 
-      // add refs and initial values to inputs
-      if (INPUT_TYPES.includes(child.type)) {
-        childProps.initialValue = this.initialValues[fieldName] || child.props.initialValue;
-        childProps.ref = this.inputRefs[fieldName];
-      }
+  cloneChildren() {
+    const { children } = this.props;
+    return React.Children.map(children, this.processChildren)
+  }
 
-      // add submit handler to submit button
-      if (child.type === FormButton) {
-        childProps.submitHandler = this.submitHandler;
-      }
+  processChildren(child) {
+    const { styles } = this.props;
+    const childProps = {};
+    const fieldName = child.props && child.props.name;
 
-      // pass on CSS modules
-      childProps.styles = styles;
+    // add refs and initial values to inputs
+    if (INPUT_TYPES.includes(child.type)) {
+      childProps.initialValue = this.initialValues[fieldName] || child.props.initialValue;
+      childProps.ref = this.inputRefs[fieldName];
+    }
 
-      // pass on form state to Form State Components
-      if (FORM_STATE_COMPONENTS.includes(child.type)) {
-        childProps.formState = this.state.formState;
-      }
+    // add submit handler to submit button
+    if (child.type === FormButton) {
+      childProps.submitHandler = this.submitHandler;
+    }
 
-      return React.cloneElement(child, { ...childProps });
-    });
+    // pass on CSS modules
+    childProps.styles = styles;
+
+    // pass on form state to Form State Components
+    if (FORM_STATE_COMPONENTS.includes(child.type)) {
+      childProps.formState = this.state.formState;
+    }
+
+    // handle children of OnActive components
+    if (child.type === OnActive) {
+      childProps.parsedChildren = React.Children.map(child.props.children, this.processChildren);
+    }
+
+    return React.cloneElement(child, { ...childProps });
   }
 
   validateEntries() {
@@ -134,14 +148,13 @@ class Form extends React.PureComponent {
     const { action } = this.props;
     submit(action, formValues)
       .then(result => {
-        // console.log(result);
         this.setState({ formState: 'resolved' });
       })
       .catch(err => {
         console.error(err);
         this.setState({ formState: 'failed' });
       });
-    this.setState({ formState: 'loading' });
+    this.setState({ formState: 'submitting' });
   }
 
   componentDidMount() {
@@ -157,7 +170,7 @@ class Form extends React.PureComponent {
   }
 
   render() {
-    const { action, thankyouMessage, className, encType, styles = {} } = this.props;
+    const { action, className, encType, styles = {} } = this.props;
     const { formState } = this.state;
 
     return (
@@ -170,26 +183,10 @@ class Form extends React.PureComponent {
           onChange={this.getInputValues}
           encType={encType}
         >
-          {/* <div
-            className={styles.formLoadingText || 'form--loading-text'}
-            data-formstatus={formState}
-          >
-            <Loader spinner>Registering</Loader>
-          </div>
-          <div
-            className={styles.formResolvedText || 'form--resolved-text'}
-            data-formstatus={formState}
-          >
-            {thankyouMessage}
-          </div>
-          <div className={styles.formFailedText || 'form--failed-text'} data-formstatus={formState}>
-            <Retry submitHandler={this.submitHandler} formState={formState} />
-          </div> */}
-
           {this.cloneChildren()}
         </form>
         <div onClick={() => { this.setState({ formState: 'active' }) }}>Active</div>
-        <div onClick={() => { this.setState({ formState: 'loading' }) }}>Loading</div>
+        <div onClick={() => { this.setState({ formState: 'submitting' }) }}>Submitting</div>
         <div onClick={() => { this.setState({ formState: 'failed' }) }}>Failed</div>
         <div onClick={() => { this.setState({ formState: 'resolved' }) }}>Resolved</div>
       </a>
@@ -219,17 +216,13 @@ function parseParameters() {
 
 Form.propTypes = {
   action: PropTypes.string.isRequired,
-  thankyouMessage: PropTypes.element.isRequired,
   className: PropTypes.string,
   submit: PropTypes.func,
   encType: PropTypes.string,
-  wakeup: PropTypes.bool,
-  toggleRegistration: PropTypes.func,
   styles: PropTypes.object,
 };
 
 Form.defaultProps = {
-  thankyouMessage: <span>Thank you!</span>,
   className: '',
   encType: '',
 };
