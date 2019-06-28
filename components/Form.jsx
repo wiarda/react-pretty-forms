@@ -21,6 +21,17 @@ const FORM_STATE_COMPONENTS = [FormStatusWrapper, OnResolved, OnFailed, OnSubmit
 // include cookies in form as a setting
 
 
+// hp:
+// -refactor current behavior of OnActive into FormStatusWrapper to allow user control of behavior when form-status changes
+// -remove form-status from FormFields
+// -add a wrapper class that exposes Form's get values field
+// 
+
+// lp:
+// improve naming conventions for css in subelements
+//
+
+
 /**
  * title = the form's title text
  * action = api endpoint to submit form
@@ -39,6 +50,7 @@ class Form extends React.PureComponent {
     this.cloneChildren = this.cloneChildren.bind(this);
     this.processChildren = this.processChildren.bind(this);
     this.generateRefs = this.generateRefs.bind(this);
+    this.saveFormInput = this.saveFormInput.bind(this);
 
     // initiate form state
     this.state = { formState: 'active' };
@@ -54,10 +66,19 @@ class Form extends React.PureComponent {
 
   getInputValues() {
     const currentValues = {};
-    this.fieldNames.forEach(fieldName => {
-      currentValues[fieldName] = this.inputRefs[fieldName].current.getValue();
-    });
+    try {
+      this.fieldNames.forEach(fieldName => {
+        currentValues[fieldName] = this.inputRefs[fieldName].current.getValue();
+      });
+    } catch (err) {
+      console.log('Refs not rendered to DOM')
+      return this.initialValues;
+    }
     return currentValues;
+  }
+
+  saveFormInput(formValues = this.getInputValues()) {
+    this.initialValues = formValues;
   }
 
   generateRefs(child) {
@@ -81,7 +102,7 @@ class Form extends React.PureComponent {
     const childProps = {};
     const fieldName = child.props && child.props.name;
 
-    // add refs and initial values to inputs
+    // add refs and initial / saved values to inputs
     if (INPUT_TYPES.includes(child.type)) {
       childProps.initialValue = this.initialValues[fieldName] || child.props.initialValue;
       childProps.ref = this.inputRefs[fieldName];
@@ -133,13 +154,18 @@ class Form extends React.PureComponent {
     if (!isFormValid) return;
 
     // gather form values for submission
-    const formValues = {};
-    this.fieldNames.forEach(fieldName => {
-      formValues[fieldName] = this.inputRefs[fieldName].current.getValue();
-    });
+    const formValues = this.getInputValues();
+
+    // {};
+    // this.fieldNames.forEach(fieldName => {
+    //   formValues[fieldName] = this.inputRefs[fieldName].current.getValue();
+    // });
 
     // pass cookies as a form value b/c cloud functions strip cookies (other than __session) from request
     formValues.cookie = document.cookie;
+
+    // save current values
+    this.saveFormInput(formValues);
 
     // check for custom submit
     const submit = this.props.submit || this.defaultSubmit;
@@ -155,18 +181,6 @@ class Form extends React.PureComponent {
         this.setState({ formState: 'failed' });
       });
     this.setState({ formState: 'submitting' });
-  }
-
-  componentDidMount() {
-    const { wakeup, action } = this.props;
-
-    // wake submission endpoint
-    if (wakeup) {
-      // remove replace silent / notify with wake
-      fetch(`${action.slice(0, -6)}wakeup`, { method: 'POST' })
-        .then(result => console.log('Endpoint woken'))
-        .catch(err => console.log('Endpoint unreachable.'));
-    }
   }
 
   render() {
@@ -186,9 +200,10 @@ class Form extends React.PureComponent {
           {this.cloneChildren()}
         </form>
         <div onClick={() => { this.setState({ formState: 'active' }) }}>Active</div>
-        <div onClick={() => { this.setState({ formState: 'submitting' }) }}>Submitting</div>
-        <div onClick={() => { this.setState({ formState: 'failed' }) }}>Failed</div>
-        <div onClick={() => { this.setState({ formState: 'resolved' }) }}>Resolved</div>
+        <div onClick={() => { this.saveFormInput(); this.setState({ formState: 'submitting' }) }}>Submitting</div>
+        <div onClick={() => { this.saveFormInput(); this.setState({ formState: 'failed' }) }}>Failed</div>
+        <div onClick={() => { this.saveFormInput(); this.setState({ formState: 'resolved' }) }}>Resolved</div>
+        <div onClick={() => { console.log(this.getInputValues()); }}>Log current form values</div>
       </a>
     );
   }
