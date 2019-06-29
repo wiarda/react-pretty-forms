@@ -16,7 +16,7 @@ class FormField extends React.PureComponent {
     this.state = {
       isValid: true,
       validationMessage: this.getValidationMessage(),
-      labelUp: true, // so that in non-js environments, label appears minimized
+      labelUp: true, // default label to minimized for non-JS environments
     };
   }
 
@@ -70,7 +70,6 @@ class FormField extends React.PureComponent {
 
     // check if label should return to central position
     const labelUp = Boolean(this.getValue());
-    // console.log(this.getValue());
 
     // check if validity message ought to display
     const isValid = this.deriveValidityState();
@@ -80,17 +79,22 @@ class FormField extends React.PureComponent {
   render() {
     const {
       name,
-      initialValue,
-      label = false,
       type = 'text',
       required = false,
+      initialValue,
       styles = {},
+      rowClassName = styles.prettyRow || 'pretty-row',
+      inputWrapperClassName = styles.prettyInputWrapper || 'pretty-input-wrapper',
+      className = styles.prettyInput || 'pretty-input',
+      validationClassName = styles.prettyValidation || 'pretty-validation',
+      label = false,
+      labelClassName = styles.prettyLabel || 'pretty-label',
     } = this.props;
     const { validationMessage, isValid, labelUp } = this.state;
 
     const labelComponent = label ? (
       <label
-        className={styles.prettyLabel || 'form--pretty-label'}
+        className={labelClassName}
         htmlFor={name}
         data-active={labelUp}
       >
@@ -103,30 +107,30 @@ class FormField extends React.PureComponent {
       margin: 'unset',
       padding: 'unset',
       height: '0',
+      pointerEvents: 'none',
     };
 
     return (
       <React.Fragment>
         <div
-          className={styles.prettyRow || 'form--pretty-row'}
+          className={rowClassName}
           style={type === 'hidden' ? hiddenStyle : {}}
         >
-          <div className={styles.prettyInputWrapper || 'form--pretty-input-wrapper'}>
+          <div className={inputWrapperClassName}>
             {labelComponent}
             <input
-              className={styles.prettyInput || 'form--pretty-input'}
+              className={className}
               required={required}
               type={type}
               name={name}
               ref={this.inputRef}
               defaultValue={initialValue}
               onBlur={this.blurHandler}
-              // onClick={this.clickHandler}
               onFocus={this.focusHandler}
               data-validity={isValid}
             />
             <div
-              className={styles.prettyValidation || 'form--pretty-validation'}
+              className={validationClassName}
               data-validity={isValid}
             >
               {validationMessage}

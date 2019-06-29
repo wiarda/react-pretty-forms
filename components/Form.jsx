@@ -2,8 +2,8 @@
 const React = require('react');
 const PropTypes = require('prop-types');
 
+const FormField = require('./FormField');
 const FormFieldFile = require('./FormFieldFile');
-const FormFieldPretty = require('./FormFieldPretty');
 const FormButton = require('./FormButton');
 const FormSelectPretty = require('./FormSelectPretty');
 const FormCheckbox = require('./FormCheckbox');
@@ -14,7 +14,7 @@ const OnFailed = require('./OnFailed');
 const OnSubmitting = require('./OnSubmitting');
 const OnActive = require('./OnActive');
 
-const INPUT_TYPES = [FormFieldFile, FormFieldPretty, FormSelectPretty, FormCheckbox];
+const INPUT_TYPES = [FormFieldFile, FormField, FormSelectPretty, FormCheckbox];
 const FORM_STATE_COMPONENTS = [FormStatusWrapper, OnResolved, OnFailed, OnSubmitting, OnActive]
 
 // ToDo: Standardize form states and include as a data prop on the form to enable easier CSS styling off it
@@ -22,10 +22,13 @@ const FORM_STATE_COMPONENTS = [FormStatusWrapper, OnResolved, OnFailed, OnSubmit
 
 
 // hp:
-// -refactor current behavior of OnActive into FormStatusWrapper to allow user control of behavior when form-status changes
+// -allow custom classnames on all components
 // -remove form-status from FormFields
 // -add a wrapper class that exposes Form's get values field
-// 
+// -add fetch polyfill for ie support
+// -rename modular styles for clarity
+// -for form pretty: option to disable label up on mobile (defaulty to true)
+// -refactor current behavior of FormStatusWrapper to allow user control of behavior when form-status changes
 
 // lp:
 // improve naming conventions for css in subelements
@@ -156,13 +159,8 @@ class Form extends React.PureComponent {
     // gather form values for submission
     const formValues = this.getInputValues();
 
-    // {};
-    // this.fieldNames.forEach(fieldName => {
-    //   formValues[fieldName] = this.inputRefs[fieldName].current.getValue();
-    // });
-
-    // pass cookies as a form value b/c cloud functions strip cookies (other than __session) from request
-    formValues.cookie = document.cookie;
+    // pass cookies as a form value b/c cloud fns strip cookies (other than __session) from req
+    formValues.cookie = document && document.cookie;
 
     // save current values
     this.saveFormInput(formValues);
