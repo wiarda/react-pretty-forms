@@ -9,13 +9,13 @@ const FormSelectPretty = require('./FormSelectPretty');
 const FormCheckbox = require('./FormCheckbox');
 const FormStatusWrapper = require('./FormStateWrapper');
 
-const OnResolved = require('./OnResolved');
-const OnFailed = require('./OnFailed');
-const OnSubmitting = require('./OnSubmitting');
-const OnActive = require('./OnActive');
+const IfResolved = require('./IfResolved');
+const IfFailed = require('./IfFailed');
+const IfSubmitting = require('./IfSubmitting');
+const IfActive = require('./IfActive');
 
 const INPUT_TYPES = [FormFieldFile, FormField, FormSelectPretty, FormCheckbox];
-const FORM_STATE_COMPONENTS = [FormStatusWrapper, OnResolved, OnFailed, OnSubmitting, OnActive]
+const FORM_STATE_COMPONENTS = [FormStatusWrapper, IfResolved, IfFailed, IfSubmitting, IfActive]
 
 // ToDo: Standardize form states and include as a data prop on the form to enable easier CSS styling off it
 // include cookies in form as a setting
@@ -90,7 +90,7 @@ class Form extends React.PureComponent {
       this.inputRefs[fieldName] = React.createRef();
       this.fieldNames.push(fieldName);
     }
-    if (child.type === OnActive) {
+    if (child.type === IfActive) {
       React.Children.forEach(child.props.children, this.generateRefs)
     }
   }
@@ -125,7 +125,7 @@ class Form extends React.PureComponent {
     }
 
     // handle children of OnActive components
-    if (child.type === OnActive) {
+    if (child.type === IfActive) {
       childProps.parsedChildren = React.Children.map(child.props.children, this.processChildren);
     }
 

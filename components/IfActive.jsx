@@ -1,6 +1,6 @@
 const React = require('react');
 
-const OnActive = ({ formState, className, parsedChildren }) => {
+const IfActive = ({ formState, className, parsedChildren }) => {
 
     if (formState === 'active') {
         return (
@@ -13,4 +13,4 @@ const OnActive = ({ formState, className, parsedChildren }) => {
     return null;
 }
 
-module.exports = React.memo(OnActive);
+module.exports = React.memo(IfActive);
