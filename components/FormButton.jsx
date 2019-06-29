@@ -1,11 +1,11 @@
 const React = require('react');
 const PropTypes = require('prop-types');
 
-function FormButton({ value, submitHandler, type, style = {}, styles = {}, ...props }) {
+function FormButton({ value, submitHandler, type, style = {}, styles = {}, className = styles.prettyButton || 'pretty-button', ...props }) {
   return (
     <input
       type={type}
-      className={styles.formButton || 'form--button'}
+      className={className}
       value={value}
       onClick={submitHandler}
       style={style}
