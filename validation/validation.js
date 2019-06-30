@@ -38,6 +38,6 @@ export function selectDefaultValidityMessage(name, required) {
       break;
     default:
       if (required) return INVALID_ENTRY;
-      return '';
   }
+  return '';
 }
