@@ -1,4 +1,4 @@
-/* eslint-disable */
+/* eslint-disable max-len */
 const React = require('react');
 const PropTypes = require('prop-types');
 
@@ -15,11 +15,13 @@ const IfSubmitting = require('./IfSubmitting');
 const IfActive = require('./IfActive');
 
 const INPUT_TYPES = [FormFieldFile, FormField, FormSelectPretty, FormCheckbox];
-const FORM_STATE_COMPONENTS = [FormStatusWrapper, IfResolved, IfFailed, IfSubmitting, IfActive]
+const FORM_STATE_COMPONENTS = [FormStatusWrapper, IfResolved, IfFailed, IfSubmitting, IfActive];
 
 // ToDo: Standardize form states and include as a data prop on the form to enable easier CSS styling off it
 // include cookies in form as a setting
 
+
+// add fetch polyfill for older browsers
 
 // hp:
 // -allow custom classnames on all components
@@ -29,6 +31,7 @@ const FORM_STATE_COMPONENTS = [FormStatusWrapper, IfResolved, IfFailed, IfSubmit
 // -rename modular styles for clarity
 // -for form pretty: option to disable label up on mobile (defaulty to true)
 // -refactor current behavior of FormStatusWrapper to allow user control of behavior when form-status changes
+// -refactor label to nest control
 
 // lp:
 // improve naming conventions for css in subelements
@@ -42,12 +45,38 @@ const FORM_STATE_COMPONENTS = [FormStatusWrapper, IfResolved, IfFailed, IfSubmit
  * to track link sources
  */
 class Form extends React.PureComponent {
+  static defaultSubmit(action, formValues) {
+    return fetch(action, {
+      method: 'POST',
+      body: JSON.stringify(formValues),
+    });
+  }
+
+  static parseParameters() {
+    if (typeof window !== 'undefined') {
+      try {
+        const rawParams = window.location.search.slice(1);
+        const params = new URLSearchParams(rawParams);
+        const initialValues = {};
+
+        for (const param of params) {
+          const [name, value] = param;
+          initialValues[name] = value;
+        }
+
+        return initialValues;
+      } catch (err) {
+        console.log('Search parameters not supported in this browser version.');
+      }
+    }
+    return {};
+  }
+
   constructor(props) {
     super(props);
 
     // methods
     this.submitHandler = this.submitHandler.bind(this);
-    this.defaultSubmit = this.defaultSubmit.bind(this);
     this.validateEntries = this.validateEntries.bind(this);
     this.getInputValues = this.getInputValues.bind(this);
     this.cloneChildren = this.cloneChildren.bind(this);
@@ -59,7 +88,7 @@ class Form extends React.PureComponent {
     this.state = { formState: 'active' };
 
     // parse parameter values
-    this.initialValues = parseParameters();
+    this.initialValues = Form.parseParameters();
 
     // generate refs for input fields
     this.inputRefs = {};
@@ -74,7 +103,7 @@ class Form extends React.PureComponent {
         currentValues[fieldName] = this.inputRefs[fieldName].current.getValue();
       });
     } catch (err) {
-      console.log('Refs not rendered to DOM')
+      console.log('Refs not rendered to DOM');
       return this.initialValues;
     }
     return currentValues;
@@ -91,13 +120,13 @@ class Form extends React.PureComponent {
       this.fieldNames.push(fieldName);
     }
     if (child.type === IfActive) {
-      React.Children.forEach(child.props.children, this.generateRefs)
+      React.Children.forEach(child.props.children, this.generateRefs);
     }
   }
 
   cloneChildren() {
     const { children } = this.props;
-    return React.Children.map(children, this.processChildren)
+    return React.Children.map(children, this.processChildren);
   }
 
   processChildren(child) {
@@ -140,14 +169,6 @@ class Form extends React.PureComponent {
     }, true);
   }
 
-  defaultSubmit(action, formValues) {
-    console.log('default submit');
-    return fetch(action, {
-      method: 'POST',
-      body: JSON.stringify(formValues),
-    });
-  }
-
   submitHandler(e) {
     e.preventDefault();
     console.log('form submit handler');
@@ -160,18 +181,19 @@ class Form extends React.PureComponent {
     const formValues = this.getInputValues();
 
     // pass cookies as a form value b/c cloud fns strip cookies (other than __session) from req
+    // eslint-disable-next-line no-undef
     formValues.cookie = document && document.cookie;
 
     // save current values
     this.saveFormInput(formValues);
 
     // check for custom submit
-    const submit = this.props.submit || this.defaultSubmit;
+    const { submit = Form.defaultSubmit } = this.props;
 
     // submit
     const { action } = this.props;
     submit(action, formValues)
-      .then(result => {
+      .then(() => {
         this.setState({ formState: 'resolved' });
       })
       .catch(err => {
@@ -182,11 +204,13 @@ class Form extends React.PureComponent {
   }
 
   render() {
-    const { action, className, encType, styles = {} } = this.props;
+    const {
+      action, className, encType, styles = {},
+    } = this.props;
     const { formState } = this.state;
 
     return (
-      <a name="form">
+      <React.Fragment>
         <form
           className={styles.form || `${className} registration--form`}
           action={action}
@@ -197,34 +221,14 @@ class Form extends React.PureComponent {
         >
           {this.cloneChildren()}
         </form>
-        <div onClick={() => { this.setState({ formState: 'active' }) }}>Active</div>
-        <div onClick={() => { this.saveFormInput(); this.setState({ formState: 'submitting' }) }}>Submitting</div>
-        <div onClick={() => { this.saveFormInput(); this.setState({ formState: 'failed' }) }}>Failed</div>
-        <div onClick={() => { this.saveFormInput(); this.setState({ formState: 'resolved' }) }}>Resolved</div>
+        <div onClick={() => { this.setState({ formState: 'active' }); }}>Active</div>
+        <div onClick={() => { this.saveFormInput(); this.setState({ formState: 'submitting' }); }}>Submitting</div>
+        <div onClick={() => { this.saveFormInput(); this.setState({ formState: 'failed' }); }}>Failed</div>
+        <div onClick={() => { this.saveFormInput(); this.setState({ formState: 'resolved' }); }}>Resolved</div>
         <div onClick={() => { console.log(this.getInputValues()); }}>Log current form values</div>
-      </a>
+      </React.Fragment>
     );
   }
-}
-
-function parseParameters() {
-  if (typeof window !== 'undefined') {
-    try {
-      const rawParams = window.location.search.slice(1);
-      const params = new URLSearchParams(rawParams);
-      const initialValues = {};
-
-      for (let param of params) {
-        const [name, value] = param;
-        initialValues[name] = value;
-      }
-
-      return initialValues;
-    } catch (err) {
-      console.log('Search parameters not supported in this browser version.')
-    }
-  }
-  return {};
 }
 
 Form.propTypes = {
@@ -232,12 +236,14 @@ Form.propTypes = {
   className: PropTypes.string,
   submit: PropTypes.func,
   encType: PropTypes.string,
-  styles: PropTypes.object,
+  styles: PropTypes.shape({}),
 };
 
 Form.defaultProps = {
   className: '',
   encType: '',
+  submit: Form.defaultSubmit,
+  styles: {},
 };
 
 module.exports = Form;
