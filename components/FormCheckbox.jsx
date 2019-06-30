@@ -1,14 +1,15 @@
 const React = require('react');
 const PropTypes = require('prop-types');
-const FormFieldPretty = require('./FormFieldPretty');
+const FormField = require('./FormField');
+const Label = require('./Label');
 
-const { defaultValidator, selectDefaultValidityMessage } = require('../validation/validation');
-
-class FormCheckbox extends FormFieldPretty {
+class FormCheckbox extends FormField {
   constructor(props) {
     super(props);
     this.getValue = this.getValue.bind(this);
     this.inputRef = React.createRef();
+    this.deriveValidityState = this.deriveValidityState.bind(this);
+    this.getValidationMessage = this.getValidationMessage.bind(this);
   }
 
   getValue() {
@@ -17,62 +18,68 @@ class FormCheckbox extends FormFieldPretty {
     return false;
   }
 
+  deriveValidityState() {
+    const { validator, required } = this.props;
+    const isChecked = this.getValue();
+    if (validator) return validator(isChecked);
+    if (required) return isChecked;
+    return true;
+  }
+
+  getValidationMessage() {
+    const { required } = this.props;
+    return super.getValidationMessage('checkbox', required);
+  }
+
   render() {
-    const { name, label = false, type = 'text', size = '20px', checked, value } = this.props;
+    const {
+      name,
+      styles = {},
+      className = styles.prettyCheckbox || 'pretty-checkbox',
+      rowClassName = styles.prettyRow || 'pretty-row',
+      labelClassName = styles.prettyCheckboxLabel || 'pretty-checkbox-label',
+      labelTextClassName = styles.prettyLabelText || 'pretty-label-text',
+      validationClassName = styles.prettyValidation || 'pretty-validation',
+      label = false,
+      type = 'checkbox',
+      checked,
+      value,
+    } = this.props;
 
-    const hiddenStyle = {
-      visibility: 'hidden',
-      margin: 'unset',
-      padding: 'unset',
-      height: '0',
-    };
-
-    const flexWrapper = {
-      display: 'flex',
-    };
-
-    const checkbox = {
-      flex: '0 0 auto',
-      height: size,
-      width: size,
-    };
-
-    const checkboxLabel = {
-      flex: '1 1 auto',
-      paddingLeft: '1rem',
-      textAlign: 'left',
-      fontSize: '90%',
-    };
-
-    const labelComponent = label ? (
-      <label style={checkboxLabel} htmlFor={name}>
-        {label}
-      </label>
-    ) : null;
+    const { validationMessage, isValid } = this.state;
 
     return (
-      <div
-        className="form--pretty-row form--pretty-checkbox"
-        style={type === 'hidden' ? hiddenStyle : {}}
-      >
-        <div style={flexWrapper}>
+      <div className={rowClassName}>
+        <Label
+          htmlFor={name}
+          label={label}
+          labelTextClassName={labelTextClassName}
+          className={labelClassName}
+          data-validity={isValid}
+        >
           <input
-            style={checkbox}
+            id={name}
+            className={className}
             type={type}
             name={name}
             ref={this.inputRef}
             defaultChecked={checked}
             value={value}
+            data-validity={isValid}
           />
-
-          {labelComponent}
+        </Label>
+        <div
+          className={validationClassName}
+          data-validity={isValid}
+        >
+          {validationMessage}
         </div>
       </div>
     );
   }
 }
 
-FormFieldPretty.propTypes = {
+FormField.propTypes = {
   type: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
   value: PropTypes.string.isRequired,
@@ -83,8 +90,10 @@ FormFieldPretty.propTypes = {
   validationMessage: PropTypes.string,
 };
 
-FormFieldPretty.defaultProps = {
+FormField.defaultProps = {
+  type: 'checkbox',
   value: 'checkbox',
+  name: 'checkbox',
 };
 
 module.exports = FormCheckbox;
