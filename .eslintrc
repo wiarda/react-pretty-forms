@@ -2,7 +2,6 @@
   "extends": "airbnb",
   "rules": {
     "linebreak-style": 0,
-    "react/prop-types": 0, // disable props validation using react/prop-types
     "react/jsx-one-expression-per-line": 0,
     "react/no-unescaped-entities": 0,
     "operator-linebreak": 0,
@@ -10,3 +9,5 @@
     "react/jsx-filename-extension": 0
   }
 }
+
+// "react/prop-types": 0, // disable props validation using react/prop-types

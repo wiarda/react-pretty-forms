@@ -1,3 +1,9 @@
 {
-    "editor.defaultFormatter": "dbaeumer.vscode-eslint"
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "prettier.eslintIntegration": true,
+    "editor.tabSize": 2,
+    "prettier.singleQuote": true,
+    "prettier.requireConfig": true,
+    "prettier.trailingComma": "es5",
+    "prettier.useTabs": true
 }
