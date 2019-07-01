@@ -7,7 +7,7 @@ const FormFieldFile = require('./FormFieldFile');
 const FormButton = require('./FormButton');
 const FormSelectPretty = require('./FormSelectPretty');
 const FormCheckbox = require('./FormCheckbox');
-const FormStatusWrapper = require('./FormStateWrapper');
+const FormStatusWrapper = require('./FormStatusWrapper');
 
 const IfResolved = require('./IfResolved');
 const IfFailed = require('./IfFailed');
@@ -103,7 +103,6 @@ class Form extends React.PureComponent {
         currentValues[fieldName] = this.inputRefs[fieldName].current.getValue();
       });
     } catch (err) {
-      console.log('Refs not rendered to DOM');
       return this.initialValues;
     }
     return currentValues;
@@ -150,14 +149,18 @@ class Form extends React.PureComponent {
 
     // pass on form state to Form State Components
     if (FORM_STATE_COMPONENTS.includes(child.type)) {
-      childProps.formState = this.state.formState;
+      const { formState } = this.state;
+      childProps.formState = formState;
     }
-
     // handle children of OnActive components
     if (child.type === IfActive) {
       childProps.parsedChildren = React.Children.map(child.props.children, this.processChildren);
     }
 
+    // forward props in FormStateWrapper
+    if (child.type === FormStatusWrapper) {
+      Object.assign(childProps, { form: this });
+    }
     return React.cloneElement(child, { ...childProps });
   }
 
@@ -171,7 +174,6 @@ class Form extends React.PureComponent {
 
   submitHandler(e) {
     e.preventDefault();
-    console.log('form submit handler');
 
     // check for validity
     const isFormValid = this.validateEntries();
@@ -221,11 +223,6 @@ class Form extends React.PureComponent {
         >
           {this.cloneChildren()}
         </form>
-        <div onClick={() => { this.setState({ formState: 'active' }); }}>Active</div>
-        <div onClick={() => { this.saveFormInput(); this.setState({ formState: 'submitting' }); }}>Submitting</div>
-        <div onClick={() => { this.saveFormInput(); this.setState({ formState: 'failed' }); }}>Failed</div>
-        <div onClick={() => { this.saveFormInput(); this.setState({ formState: 'resolved' }); }}>Resolved</div>
-        <div onClick={() => { console.log(this.getInputValues()); }}>Log current form values</div>
       </React.Fragment>
     );
   }
@@ -237,9 +234,11 @@ Form.propTypes = {
   submit: PropTypes.func,
   encType: PropTypes.string,
   styles: PropTypes.shape({}),
+  children: PropTypes.node,
 };
 
 Form.defaultProps = {
+  children: null,
   className: '',
   encType: '',
   submit: Form.defaultSubmit,
