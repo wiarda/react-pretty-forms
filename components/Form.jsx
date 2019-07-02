@@ -1,6 +1,9 @@
 /* eslint-disable max-len */
+/* global window */
+
 const React = require('react');
 const PropTypes = require('prop-types');
+const fetch = require('whatwg-fetch');
 
 const FormField = require('./FormField');
 const FormFieldFile = require('./FormFieldFile');
@@ -17,20 +20,15 @@ const IfActive = require('./IfActive');
 const INPUT_TYPES = [FormFieldFile, FormField, FormSelectPretty, FormCheckbox];
 const FORM_STATE_COMPONENTS = [FormStatusWrapper, IfResolved, IfFailed, IfSubmitting, IfActive];
 
-// ToDo: Standardize form states and include as a data prop on the form to enable easier CSS styling off it
+// ToDo:
 // include cookies in form as a setting
-
-
-// add fetch polyfill for older browsers
 
 // hp:
 // -allow custom classnames on all components
 // -remove form-status from FormFields
 // -add a wrapper class that exposes Form's get values field
-// -add fetch polyfill for ie support
 // -rename modular styles for clarity
 // -for form pretty: option to disable label up on mobile (defaulty to true)
-// -refactor current behavior of FormStatusWrapper to allow user control of behavior when form-status changes
 // -refactor label to nest control
 
 // lp:
@@ -59,14 +57,14 @@ class Form extends React.PureComponent {
         const params = new URLSearchParams(rawParams);
         const initialValues = {};
 
-        for (const param of params) {
+        params.entries().forEach(param => {
           const [name, value] = param;
           initialValues[name] = value;
-        }
+        });
 
         return initialValues;
       } catch (err) {
-        console.log('Search parameters not supported in this browser version.');
+        return {};
       }
     }
     return {};
@@ -198,8 +196,7 @@ class Form extends React.PureComponent {
       .then(() => {
         this.setState({ formState: 'resolved' });
       })
-      .catch(err => {
-        console.error(err);
+      .catch(() => {
         this.setState({ formState: 'failed' });
       });
     this.setState({ formState: 'submitting' });
