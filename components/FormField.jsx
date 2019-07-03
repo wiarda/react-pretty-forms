@@ -1,7 +1,12 @@
+/* eslint-disable react/require-default-props */
+/* global window */
+
 const React = require('react');
 const PropTypes = require('prop-types');
+const Label = require('./Label');
+const { hidden } = require('./helpers/styles');
 
-const { defaultValidator, selectDefaultValidityMessage } = require('../validation/validation');
+const { defaultValidator, selectDefaultValidityMessage } = require('./helpers/validation');
 
 class FormField extends React.PureComponent {
   constructor(props) {
@@ -53,7 +58,7 @@ class FormField extends React.PureComponent {
     return isValid;
   }
 
-  clickHandler(e) {
+  clickHandler() {
     // e.stopPropagation();
     // moves label to upper-position and clears validity messages
     this.setState({ labelUp: true, isValid: true });
@@ -83,61 +88,47 @@ class FormField extends React.PureComponent {
       required = false,
       initialValue,
       styles = {},
-      rowClassName = styles.prettyRow || 'pretty-row',
-      inputWrapperClassName = styles.prettyInputWrapper || 'pretty-input-wrapper',
       className = styles.prettyInput || 'pretty-input',
+      rowClassName = styles.prettyRow || 'pretty-row',
       validationClassName = styles.prettyValidation || 'pretty-validation',
-      label = false,
+      labelTextClassName = styles.prettyLabelText || 'pretty-label-text',
       labelClassName = styles.prettyLabel || 'pretty-label',
+      label = false,
     } = this.props;
     const { validationMessage, isValid, labelUp } = this.state;
 
-    const labelComponent = label ? (
-      <label
-        className={labelClassName}
-        htmlFor={name}
-        data-active={labelUp}
-      >
-        {label}
-      </label>
-    ) : null;
-
-    const hiddenStyle = {
-      visibility: 'hidden',
-      margin: 'unset',
-      padding: 'unset',
-      height: '0',
-      pointerEvents: 'none',
-    };
-
     return (
-      <React.Fragment>
-        <div
-          className={rowClassName}
-          style={type === 'hidden' ? hiddenStyle : {}}
+      <div
+        className={rowClassName}
+        style={type === 'hidden' ? hidden : {}}
+      >
+        <Label
+          className={labelClassName}
+          labelTextClassName={labelTextClassName}
+          htmlFor={name}
+          label={label}
+          data-validity={isValid}
+          data-active={labelUp}
         >
-          <div className={inputWrapperClassName}>
-            {labelComponent}
-            <input
-              className={className}
-              required={required}
-              type={type}
-              name={name}
-              ref={this.inputRef}
-              defaultValue={initialValue}
-              onBlur={this.blurHandler}
-              onFocus={this.focusHandler}
-              data-validity={isValid}
-            />
-            <div
-              className={validationClassName}
-              data-validity={isValid}
-            >
-              {validationMessage}
-            </div>
-          </div>
+          <input
+            className={className}
+            required={required}
+            type={type}
+            name={name}
+            ref={this.inputRef}
+            defaultValue={initialValue}
+            onBlur={this.blurHandler}
+            onFocus={this.focusHandler}
+            data-validity={isValid}
+          />
+        </Label>
+        <div
+          className={validationClassName}
+          data-validity={isValid}
+        >
+          {validationMessage}
         </div>
-      </React.Fragment>
+      </div>
     );
   }
 }
@@ -145,11 +136,25 @@ class FormField extends React.PureComponent {
 FormField.propTypes = {
   type: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
-  label: PropTypes.string,
+  initialValue: PropTypes.string.isRequired,
+  label: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.bool,
+  ]),
   required: PropTypes.bool,
-  initialValue: PropTypes.string,
+  className: PropTypes.string,
+  rowClassName: PropTypes.string,
+  validationClassName: PropTypes.string,
+  labelClassName: PropTypes.string,
+  labelTextClassName: PropTypes.string,
   validator: PropTypes.func,
   validationMessage: PropTypes.string,
+  styles: PropTypes.shape({}),
+};
+
+FormField.defaultProps = {
+  required: false,
+  label: false,
 };
 
 module.exports = FormField;

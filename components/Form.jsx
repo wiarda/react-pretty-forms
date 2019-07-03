@@ -8,7 +8,7 @@ const fetch = require('whatwg-fetch');
 const FormField = require('./FormField');
 const FormFieldFile = require('./FormFieldFile');
 const FormButton = require('./FormButton');
-const FormSelectPretty = require('./FormSelectPretty');
+const FormSelectPretty = require('./FormSelect');
 const FormCheckbox = require('./FormCheckbox');
 const FormStatusWrapper = require('./FormStatusWrapper');
 
@@ -24,17 +24,15 @@ const FORM_STATE_COMPONENTS = [FormStatusWrapper, IfResolved, IfFailed, IfSubmit
 // include cookies in form as a setting
 
 // hp:
+// checkbox: toggle validated on click
 // -allow custom classnames on all components
 // -remove form-status from FormFields
 // -add a wrapper class that exposes Form's get values field
 // -rename modular styles for clarity
 // -for form pretty: option to disable label up on mobile (defaulty to true)
-// -refactor label to nest control
 
 // lp:
 // improve naming conventions for css in subelements
-//
-
 
 /**
  * title = the form's title text
