@@ -38,7 +38,7 @@ class FormCheckbox extends FormField {
       className = styles.prettyCheckbox || 'pretty-checkbox',
       rowClassName = styles.prettyRow || 'pretty-row',
       labelClassName = styles.prettyCheckboxLabel || 'pretty-checkbox-label',
-      labelTextClassName = styles.prettyLabelText || 'pretty-label-text',
+      labelTextClassName = styles.prettyCheckboxLabelText || 'pretty-checkbox-label-text',
       validationClassName = styles.prettyValidation || 'pretty-validation',
       label = false,
       type = 'checkbox',
@@ -66,6 +66,7 @@ class FormCheckbox extends FormField {
             defaultChecked={checked}
             value={value}
             data-validity={isValid}
+            onClick={this.clickHandler}
           />
         </Label>
         <div
