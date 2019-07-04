@@ -1,7 +1,7 @@
+/* eslint-disable react/prop-types */
 /* eslint-disable jsx-a11y/label-has-associated-control */
 /* eslint-disable jsx-a11y/label-has-for */
 const React = require('react');
-const PropTypes = require('prop-types');
 
 function Label({
   label,
@@ -14,23 +14,18 @@ function Label({
       <label
         {...props}
       >
-        <span className={labelTextClassName}>
+        <span className={labelTextClassName} data-active={props['data-active']}>
           {label}
         </span>
         {children}
       </label>
     );
   }
-  return { children };
+  return (
+    <React.Fragment>
+      {children};
+    </React.Fragment>
+  );
 }
-
-
-Label.propTypes = {
-  label: PropTypes.string,
-};
-
-Label.defaultProps = {
-  label: null,
-};
 
 module.exports = React.memo(Label);
