@@ -1,7 +1,18 @@
+/* eslint-disable react/require-default-props */
 const React = require('react');
 const PropTypes = require('prop-types');
 
-function FormButton({ value, submitHandler, type, style = {}, styles = {}, className = styles.prettyButton || 'pretty-button', ...props }) {
+function FormButton(props) {
+  const {
+    value,
+    submitHandler,
+    type,
+    styles,
+    style,
+    className = styles.prettyButton || 'pretty-button',
+    ...remainingProps
+  } = props;
+
   return (
     <input
       type={type}
@@ -9,20 +20,25 @@ function FormButton({ value, submitHandler, type, style = {}, styles = {}, class
       value={value}
       onClick={submitHandler}
       style={style}
-      {...props}
+      {...remainingProps}
     />
   );
 }
 
 FormButton.propTypes = {
   value: PropTypes.string,
-  submitHandler: PropTypes.func,
   type: PropTypes.string,
+  submitHandler: PropTypes.func,
+  className: PropTypes.string,
+  styles: PropTypes.shape({}),
+  style: PropTypes.shape({}),
 };
 
 FormButton.defaultProps = {
   value: 'Submit',
   type: 'submit',
+  styles: {},
+  style: {},
 };
 
 module.exports = FormButton;
