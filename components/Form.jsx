@@ -24,15 +24,11 @@ const FORM_STATE_COMPONENTS = [FormStatusWrapper, IfResolved, IfFailed, IfSubmit
 // include cookies in form as a setting
 
 // hp:
-// checkbox: toggle validated on click
 // -allow custom classnames on all components
 // -remove form-status from FormFields
 // -add a wrapper class that exposes Form's get values field
 // -rename modular styles for clarity
-// -for form pretty: option to disable label up on mobile (defaulty to true)
-
-// lp:
-// improve naming conventions for css in subelements
+// -for form pretty: option to disable label up on mobile (default to true)
 
 /**
  * title = the form's title text
@@ -55,11 +51,10 @@ class Form extends React.PureComponent {
         const params = new URLSearchParams(rawParams);
         const initialValues = {};
 
-        params.entries().forEach(param => {
+        Array.from(params).forEach(param => {
           const [name, value] = param;
           initialValues[name] = value;
         });
-
         return initialValues;
       } catch (err) {
         return {};
