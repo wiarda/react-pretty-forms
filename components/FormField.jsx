@@ -46,7 +46,7 @@ class FormField extends React.PureComponent {
     const value = this.getValue();
     const { validator, name, required } = this.props;
     if (validator) {
-      return validator(value);
+      return validator(value, required);
     }
     return defaultValidator(name, value, required);
   }
@@ -70,7 +70,7 @@ class FormField extends React.PureComponent {
   }
 
   blurHandler() {
-    // don't check on fill for mobile
+    // don't check on mobile
     if (this.isMobile) return;
 
     // check if label should return to central position
