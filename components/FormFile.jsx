@@ -1,10 +1,9 @@
-const React = require('React');
+const React = require('react');
 const PropTypes = require('prop-types');
-const FormFieldPretty = require('./FormFieldPretty');
+const FormField = require('./FormField');
 
-class FormFieldFile extends FormFieldPretty {
+class FormFile extends FormField {
   getValue() {
-    console.log(this.inputRef.current.files);
     return this.inputRef.current.files;
   }
 
@@ -73,7 +72,7 @@ class FormFieldFile extends FormFieldPretty {
   }
 }
 
-FormFieldFile.propTypes = {
+FormFile.propTypes = {
   name: PropTypes.string.isRequired,
   label: PropTypes.string,
   accept: PropTypes.string,
@@ -84,9 +83,9 @@ FormFieldFile.propTypes = {
   multiple: PropTypes.bool,
 };
 
-FormFieldFile.defaultProps = {
+FormFile.defaultProps = {
   accept: '.csv,.xls',
 };
 
 
-module.exports = FormFieldFile;
+module.exports = FormFile;

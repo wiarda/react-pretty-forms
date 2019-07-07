@@ -6,7 +6,7 @@ const PropTypes = require('prop-types');
 const fetch = require('whatwg-fetch');
 
 const FormField = require('./FormField');
-const FormFieldFile = require('./FormFieldFile');
+const FormFile = require('./FormFile');
 const FormButton = require('./FormButton');
 const FormSelectPretty = require('./FormSelect');
 const FormCheckbox = require('./FormCheckbox');
@@ -17,18 +17,24 @@ const IfFailed = require('./IfFailed');
 const IfSubmitting = require('./IfSubmitting');
 const IfActive = require('./IfActive');
 
-const INPUT_TYPES = [FormFieldFile, FormField, FormSelectPretty, FormCheckbox];
+const INPUT_TYPES = [FormFile, FormField, FormSelectPretty, FormCheckbox];
 const FORM_STATE_COMPONENTS = [FormStatusWrapper, IfResolved, IfFailed, IfSubmitting, IfActive];
 
 // ToDo:
 // include cookies in form as a setting
 
 // hp:
-// -allow custom classnames on all components
-// -remove form-status from FormFields
+// -remove non-user input props from propTypes
+// -remove form-status from FormFields ???
 // -add a wrapper class that exposes Form's get values field
-// -rename modular styles for clarity
-// -for form pretty: option to disable label up on mobile (default to true)
+// -for form pretty: option to disable label up on mobile (default to true) ???
+// what's the best way to handle mobile?
+// add form file and long text types
+// check for any other form input types that should be supported
+
+// write tests
+
+// lp: add JS doc info
 
 /**
  * title = the form's title text
