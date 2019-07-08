@@ -1,22 +1,22 @@
-const React = require('React');
+const React = require('react');
 const capitalize = require('./capitalize');
 
 function createFormStatusWrapper(status) {
-    const FormStatusWrapper = ({ formState, children, className }) => {
-        if (formState === status) {
-            return (
-                <div data-formstatus={formState} className={className}>
-                    {children}
-                </div>
-            )
-        }
-
-        return null;
+  const FormStatusWrapper = ({ formState, children, className }) => {
+    if (formState === status) {
+      return (
+        <div data-formstatus={formState} className={className}>
+          {children}
+        </div>
+      );
     }
 
-    FormStatusWrapper.displayName = `On${capitalize(status)}`;
+    return null;
+  };
 
-    return FormStatusWrapper;
+  FormStatusWrapper.displayName = `On${capitalize(status)}`;
+
+  return FormStatusWrapper;
 }
 
 module.exports = createFormStatusWrapper;

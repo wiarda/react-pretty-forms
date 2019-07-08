@@ -84,7 +84,7 @@ class FormField extends React.PureComponent {
   render() {
     const {
       name,
-      type = 'text',
+      type,
       required = false,
       initialValue,
       styles = {},
@@ -134,9 +134,9 @@ class FormField extends React.PureComponent {
 }
 
 FormField.propTypes = {
-  type: PropTypes.string.isRequired,
+  type: PropTypes.string,
   name: PropTypes.string.isRequired,
-  initialValue: PropTypes.string.isRequired,
+  initialValue: PropTypes.string,
   label: PropTypes.oneOfType([
     PropTypes.string,
     PropTypes.bool,
@@ -149,12 +149,12 @@ FormField.propTypes = {
   labelTextClassName: PropTypes.string,
   validator: PropTypes.func,
   validationMessage: PropTypes.string,
-  styles: PropTypes.shape({}),
 };
 
 FormField.defaultProps = {
   required: false,
   label: false,
+  type: 'text',
 };
 
 module.exports = FormField;

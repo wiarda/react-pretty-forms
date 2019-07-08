@@ -25,16 +25,16 @@ const FORM_STATE_COMPONENTS = [FormStatusWrapper, IfResolved, IfFailed, IfSubmit
 
 // hp:
 // -remove non-user input props from propTypes
-// -remove form-status from FormFields ???
-// -add a wrapper class that exposes Form's get values field
+// -support initialValue as a prop
 // -for form pretty: option to disable label up on mobile (default to true) ???
-// what's the best way to handle mobile?
-// add form file and long text types
-// check for any other form input types that should be supported
+// what's the best way to handle mobile
+// -add a wrapper class that exposes Form's get values field
+// -file upload for default submit
 
 // write tests
 
 // lp: add JS doc info
+// other form input types (long text, etc)
 
 /**
  * title = the form's title text
@@ -126,7 +126,7 @@ class Form extends React.PureComponent {
   }
 
   processChildren(child) {
-    const { styles } = this.props;
+    const { cssModule: styles } = this.props;
     const childProps = {};
     const fieldName = child.props && child.props.name;
 
@@ -203,15 +203,18 @@ class Form extends React.PureComponent {
 
   render() {
     const {
-      action, className, encType, styles = {},
+      action,
+      cssModule: styles,
+      className = styles.prettyForm || 'pretty-form',
+      encType,
     } = this.props;
     const { formState } = this.state;
 
     return (
       <React.Fragment>
         <form
-          className={styles.form || `${className} registration--form`}
           action={action}
+          className={className}
           method="post"
           data-formstatus={formState}
           onChange={this.getInputValues}
@@ -229,7 +232,7 @@ Form.propTypes = {
   className: PropTypes.string,
   submit: PropTypes.func,
   encType: PropTypes.string,
-  styles: PropTypes.shape({}),
+  cssModule: PropTypes.shape({}),
   children: PropTypes.node,
 };
 
@@ -238,7 +241,7 @@ Form.defaultProps = {
   className: '',
   encType: '',
   submit: Form.defaultSubmit,
-  styles: {},
+  cssModule: {},
 };
 
 module.exports = Form;
