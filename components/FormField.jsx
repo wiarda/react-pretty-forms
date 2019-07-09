@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 /* eslint-disable react/require-default-props */
 /* global window */
 
@@ -11,13 +12,17 @@ const { defaultValidator, selectDefaultValidityMessage } = require('./helpers/va
 class FormField extends React.PureComponent {
   constructor(props) {
     super(props);
+    this.defaultValidator = this.defaultValidator.bind(this);
     this.deriveValidityState = this.deriveValidityState.bind(this);
     this.validate = this.validate.bind(this);
     this.getValue = this.getValue.bind(this);
     this.clickHandler = this.clickHandler.bind(this);
     this.blurHandler = this.blurHandler.bind(this);
+    this.defaultBlur = this.defaultBlur.bind(this);
     this.focusHandler = this.focusHandler.bind(this);
     this.inputRef = React.createRef();
+
+    this.isMobile = /iPhone|iPad|iPod|Android/i.test(window.navigator.userAgent);
     this.state = {
       isValid: true,
       validationMessage: this.getValidationMessage(),
@@ -27,7 +32,6 @@ class FormField extends React.PureComponent {
 
   componentDidMount() {
     const { initialValue } = this.props;
-    this.isMobile = /iPhone|iPad|iPod|Android/i.test(window.navigator.userAgent);
     this.setState({ labelUp: Boolean(initialValue) });
   }
 
@@ -42,16 +46,20 @@ class FormField extends React.PureComponent {
     return selectDefaultValidityMessage(name, required);
   }
 
-  deriveValidityState() {
-    const value = this.getValue();
-    const { validator, name, required } = this.props;
-    if (validator) {
-      return validator(value, required);
-    }
+  defaultValidator(value) {
+    const { name, required } = this.props;
     return defaultValidator(name, value, required);
   }
 
-  // hook for external functions
+  deriveValidityState() {
+    const value = this.getValue();
+    const { validator, required } = this.props;
+    if (validator) {
+      return validator(value, required);
+    }
+    return this.defaultValidator(value);
+  }
+
   validate() {
     const isValid = this.deriveValidityState();
     this.setState({ isValid });
@@ -59,26 +67,25 @@ class FormField extends React.PureComponent {
   }
 
   clickHandler() {
-    // e.stopPropagation();
-    // moves label to upper-position and clears validity messages
     this.setState({ labelUp: true, isValid: true });
   }
 
   focusHandler() {
-    // moves label to upper-position and clears validity messages
     this.setState({ labelUp: true, isValid: true });
   }
 
-  blurHandler() {
-    // don't check on mobile
-    if (this.isMobile) return;
-
-    // check if label should return to central position
+  defaultBlur() {
     const labelUp = Boolean(this.getValue());
-
-    // check if validity message ought to display
     const isValid = this.deriveValidityState();
     this.setState({ labelUp, isValid });
+  }
+
+  blurHandler() {
+    // autofill on mobile can cause issues with revalidation / be distracting
+    const { mobileBlur } = this.props;
+    if (!mobileBlur && this.isMobile) return;
+
+    this.defaultBlur();
   }
 
   render() {
