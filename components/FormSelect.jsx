@@ -6,9 +6,7 @@ const Label = require('./Label');
 class FormSelect extends FormField {
   constructor(props) {
     super(props);
-    this.selectionValidityState = this.selectionValidityState.bind(this);
     this.validOptions = FormSelect.getValidOptions(props.children);
-    this.blurHandler = this.blurHandler.bind(this);
   }
 
   componentDidMount() {
@@ -16,18 +14,14 @@ class FormSelect extends FormField {
     this.setState({ labelUp });
   }
 
-  blurHandler() {
+  defaultBlur() {
     const labelUp = this.getValue() !== 'unselected';
-    const isValid = this.selectionValidityState();
+    const isValid = this.deriveValidityState();
     this.setState({ labelUp, isValid });
   }
 
-  selectionValidityState() {
-    const value = this.getValue();
-    const { validator, required } = this.props;
-    if (validator) {
-      return validator(value, required);
-    }
+  defaultValidator(value) {
+    const { required } = this.props;
     if (required) return value !== 'unselected';
     return true;
   }

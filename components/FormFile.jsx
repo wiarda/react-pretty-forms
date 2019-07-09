@@ -1,59 +1,45 @@
 const React = require('react');
 const PropTypes = require('prop-types');
 const FormField = require('./FormField');
+const Label = require('./Label');
 
 class FormFile extends FormField {
   getValue() {
     return this.inputRef.current.files;
   }
 
-  validate() {
-    const value = this.getValue();
-    const { validator, name, required } = this.props;
-    let isValid;
-    if (validator) {
-      isValid = validator(value);
-    } else {
-      isValid = Boolean(value[0]);
-    }
-
-    this.setState({ isValid });
-    return isValid;
-  }
-
   render() {
     const {
       name,
       initialValue,
-      label = false,
       accept,
       required = false,
       multiple = false,
+      styles = {},
+      className = styles.prettyFile || 'pretty-file',
+      rowClassName = styles.prettyRow || 'pretty-row',
+      validationClassName = styles.prettyValidation || 'pretty-validation',
+      labelTextClassName = styles.prettyLabelText || 'pretty-label-text',
+      labelClassName = styles.prettyLabel || 'pretty-label',
+      label = false,
     } = this.props;
-    const { validationMessage, isValid } = this.state;
-
-    const labelComponent = label ? (
-      <label className="form--label" htmlFor={name}>
-        {label}
-      </label>
-    ) : null;
-
-    const hiddenStyle = {
-      visibility: 'hidden',
-      margin: 'unset',
-      padding: 'unset',
-      height: '0',
-    };
+    const { validationMessage, isValid, labelUp } = this.state;
 
     return (
       <React.Fragment>
-        <div className="form--pretty-row">
-          {labelComponent}
-          <div className="form--input-wrapper">
+        <div className={rowClassName}>
+          <Label
+            className={labelClassName}
+            labelTextClassName={labelTextClassName}
+            htmlFor={name}
+            label={label}
+            data-validity={isValid}
+            data-active={labelUp}
+          >
             <input
-              className="form--input-file"
-              required={required}
               type="file"
+              className={className}
+              required={required}
               name={name}
               accept={accept}
               ref={this.inputRef}
@@ -62,9 +48,12 @@ class FormFile extends FormField {
               data-validity={isValid}
               multiple={multiple}
             />
-            <div className="form--validation" data-validity={isValid}>
-              {validationMessage}
-            </div>
+          </Label>
+          <div
+            className={validationClassName}
+            data-validity={isValid}
+          >
+            {validationMessage}
           </div>
         </div>
       </React.Fragment>

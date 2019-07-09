@@ -4,25 +4,15 @@ const FormField = require('./FormField');
 const Label = require('./Label');
 
 class FormCheckbox extends FormField {
-  constructor(props) {
-    super(props);
-    this.getValue = this.getValue.bind(this);
-    this.inputRef = React.createRef();
-    this.deriveValidityState = this.deriveValidityState.bind(this);
-    this.getValidationMessage = this.getValidationMessage.bind(this);
-  }
-
   getValue() {
     const isChecked = this.inputRef.current.checked;
     if (isChecked) return this.inputRef.current.value;
     return false;
   }
 
-  deriveValidityState() {
-    const { validator, required } = this.props;
-    const isChecked = this.getValue();
-    if (validator) return validator(isChecked);
-    if (required) return isChecked;
+  defaultValidator(value) {
+    const { required } = this.props;
+    if (required) return Boolean(value);
     return true;
   }
 
@@ -41,7 +31,6 @@ class FormCheckbox extends FormField {
       labelTextClassName = styles.prettyCheckboxLabelText || 'pretty-checkbox-label-text',
       validationClassName = styles.prettyValidation || 'pretty-validation',
       label = false,
-      type = 'checkbox',
       checked,
       value,
     } = this.props;
@@ -60,7 +49,7 @@ class FormCheckbox extends FormField {
           <input
             id={name}
             className={className}
-            type={type}
+            type="checkbox"
             name={name}
             ref={this.inputRef}
             defaultChecked={checked}
@@ -81,9 +70,8 @@ class FormCheckbox extends FormField {
 }
 
 FormField.propTypes = {
-  type: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
-  value: PropTypes.string.isRequired,
+  value: PropTypes.string,
   label: PropTypes.string,
   required: PropTypes.bool,
   initialValue: PropTypes.string,
@@ -92,8 +80,7 @@ FormField.propTypes = {
 };
 
 FormField.defaultProps = {
-  type: 'checkbox',
-  value: 'checkbox',
+  value: 'Yes',
   name: 'checkbox',
 };
 
