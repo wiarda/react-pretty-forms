@@ -20,20 +20,10 @@ const IfActive = require('./IfActive');
 const INPUT_TYPES = [FormFile, FormField, FormSelectPretty, FormCheckbox];
 const FORM_STATE_COMPONENTS = [FormStatusWrapper, IfResolved, IfFailed, IfSubmitting, IfActive];
 
-// ToDo:
-// include cookies in form as a setting
-
 // hp:
-// -remove non-user input props from propTypes
-// -support initialValue as a prop
-// -for form pretty: option to disable label up on mobile (default to true) ???
-// what's the best way to handle mobile
-// -add a wrapper class that exposes Form's get values field
-// -file upload for default submit
-
+// default submit should handle file uploads
 // write tests
-
-// lp: add JS doc info
+// add documentation
 // other form input types (long text, etc)
 
 /**
@@ -126,7 +116,7 @@ class Form extends React.PureComponent {
   }
 
   processChildren(child) {
-    const { cssModule: styles } = this.props;
+    const { cssModule: styles, allowMobileBlur } = this.props;
     const childProps = {};
     const fieldName = child.props && child.props.name;
 
@@ -143,6 +133,9 @@ class Form extends React.PureComponent {
 
     // pass on CSS modules
     childProps.styles = styles;
+
+    // mobileBlurSettings
+    childProps.mobileBlur = allowMobileBlur;
 
     // pass on form state to Form State Components
     if (FORM_STATE_COMPONENTS.includes(child.type)) {
@@ -229,6 +222,7 @@ class Form extends React.PureComponent {
 
 Form.propTypes = {
   action: PropTypes.string.isRequired,
+  allowMobileBlur: PropTypes.bool,
   className: PropTypes.string,
   submit: PropTypes.func,
   encType: PropTypes.string,
@@ -238,6 +232,7 @@ Form.propTypes = {
 
 Form.defaultProps = {
   children: null,
+  allowMobileBlur: false,
   className: '',
   encType: '',
   submit: Form.defaultSubmit,
