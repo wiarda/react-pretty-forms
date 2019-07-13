@@ -143,7 +143,10 @@ class FormField extends React.PureComponent {
 FormField.propTypes = {
   type: PropTypes.string,
   name: PropTypes.string.isRequired,
-  initialValue: PropTypes.string,
+  initialValue: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.number,
+  ]),
   label: PropTypes.oneOfType([
     PropTypes.string,
     PropTypes.bool,
@@ -163,5 +166,7 @@ FormField.defaultProps = {
   label: false,
   type: 'text',
 };
+
+FormField._prettyType = 'Field';
 
 module.exports = FormField;

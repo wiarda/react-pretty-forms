@@ -116,4 +116,6 @@ FormSelect.defaultProps = {
   multiple: false,
 };
 
+FormSelect._prettyType = 'Select';
+
 module.exports = FormSelect;

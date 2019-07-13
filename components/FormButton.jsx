@@ -41,4 +41,6 @@ FormButton.defaultProps = {
   style: {},
 };
 
+FormButton._prettyType = 'Button';
+
 module.exports = FormButton;

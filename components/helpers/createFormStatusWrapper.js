@@ -1,8 +1,10 @@
+/* eslint-disable react/prop-types */
 const React = require('react');
 const capitalize = require('./capitalize');
 
 function createFormStatusWrapper(status) {
-  const FormStatusWrapper = ({ formState, children, className }) => {
+  const FormStatusWrapper = props => {
+    const { formState, children, className } = props;
     if (formState === status) {
       return (
         <div data-formstatus={formState} className={className}>
@@ -14,7 +16,8 @@ function createFormStatusWrapper(status) {
     return null;
   };
 
-  FormStatusWrapper.displayName = `On${capitalize(status)}`;
+  FormStatusWrapper.displayName = `If${capitalize(status)}`;
+  FormStatusWrapper._prettyType = `If${capitalize(status)}`;
 
   return FormStatusWrapper;
 }

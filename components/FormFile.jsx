@@ -76,5 +76,6 @@ FormFile.defaultProps = {
   accept: '.csv,.xls',
 };
 
+FormFile._prettyType = 'File';
 
 module.exports = FormFile;

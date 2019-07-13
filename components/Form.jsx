@@ -1,24 +1,27 @@
+/* eslint-disable react/require-default-props */
 /* eslint-disable max-len */
 /* global window */
 
 const React = require('react');
 const PropTypes = require('prop-types');
-const fetch = require('whatwg-fetch');
+const { fetch } = require('whatwg-fetch');
 
-const FormField = require('./FormField');
-const FormFile = require('./FormFile');
-const FormButton = require('./FormButton');
-const FormSelectPretty = require('./FormSelect');
-const FormCheckbox = require('./FormCheckbox');
-const FormStatusWrapper = require('./FormStatusWrapper');
+// const FormField = require('./FormField');
+// const FormFile = require('./FormFile');
+// const FormButton = require('./FormButton');
+// const FormSelectPretty = require('./FormSelect');
+// const FormCheckbox = require('./FormCheckbox');
+// const FormStatusWrapper = require('./FormStatusWrapper');
 
-const IfResolved = require('./IfResolved');
-const IfFailed = require('./IfFailed');
-const IfSubmitting = require('./IfSubmitting');
-const IfActive = require('./IfActive');
+// const IfResolved = require('./IfResolved');
+// const IfFailed = require('./IfFailed');
+// const IfSubmitting = require('./IfSubmitting');
+// const IfActive = require('./IfActive');
 
-const INPUT_TYPES = [FormFile, FormField, FormSelectPretty, FormCheckbox];
-const FORM_STATE_COMPONENTS = [FormStatusWrapper, IfResolved, IfFailed, IfSubmitting, IfActive];
+// const INPUT_TYPES = [FormFile, FormField, FormSelectPretty, FormCheckbox];
+// const FORM_STATE_COMPONENTS = [FormStatusWrapper, IfResolved, IfFailed, IfSubmitting, IfActive];
+const FORM_STATE_COMPONENTS = ['StatusWrapper', 'IfResolved', 'IfFailed', 'IfSubmitting', 'IfActive'];
+const INPUT_TYPES = ['Field', 'File', 'Select', 'Checkbox'];
 
 // hp:
 // default submit should handle file uploads
@@ -100,12 +103,16 @@ class Form extends React.PureComponent {
   }
 
   generateRefs(child) {
-    if (INPUT_TYPES.includes(child.type)) {
+    const { type: { _prettyType: prettyType } } = child;
+    const wrapperType = prettyType || (child.type.type && child.type.type._prettyType);
+
+    if (INPUT_TYPES.includes(prettyType)) {
       const fieldName = child.props && child.props.name;
       this.inputRefs[fieldName] = React.createRef();
       this.fieldNames.push(fieldName);
     }
-    if (child.type === IfActive) {
+
+    if (wrapperType === 'IfActive') {
       React.Children.forEach(child.props.children, this.generateRefs);
     }
   }
@@ -117,17 +124,20 @@ class Form extends React.PureComponent {
 
   processChildren(child) {
     const { cssModule: styles, allowMobileBlur } = this.props;
+    const { type: { _prettyType: prettyType } } = child;
+    const wrapperType = prettyType || (child.type.type && child.type.type._prettyType);
+
     const childProps = {};
     const fieldName = child.props && child.props.name;
 
     // add refs and initial / saved values to inputs
-    if (INPUT_TYPES.includes(child.type)) {
+    if (INPUT_TYPES.includes(prettyType)) {
       childProps.initialValue = this.initialValues[fieldName] || child.props.initialValue;
       childProps.ref = this.inputRefs[fieldName];
     }
 
     // add submit handler to submit button
-    if (child.type === FormButton) {
+    if (prettyType === 'Button') {
       childProps.submitHandler = this.submitHandler;
     }
 
@@ -138,17 +148,17 @@ class Form extends React.PureComponent {
     childProps.mobileBlur = allowMobileBlur;
 
     // pass on form state to Form State Components
-    if (FORM_STATE_COMPONENTS.includes(child.type)) {
+    if (FORM_STATE_COMPONENTS.includes(wrapperType)) {
       const { formState } = this.state;
       childProps.formState = formState;
     }
     // handle children of OnActive components
-    if (child.type === IfActive) {
+    if (wrapperType === 'IfActive') {
       childProps.parsedChildren = React.Children.map(child.props.children, this.processChildren);
     }
 
     // forward props in FormStateWrapper
-    if (child.type === FormStatusWrapper) {
+    if (wrapperType === 'StatusWrapper') {
       Object.assign(childProps, { form: this });
     }
     return React.cloneElement(child, { ...childProps });
@@ -202,7 +212,6 @@ class Form extends React.PureComponent {
       encType,
     } = this.props;
     const { formState } = this.state;
-
     return (
       <React.Fragment>
         <form
@@ -233,7 +242,6 @@ Form.propTypes = {
 Form.defaultProps = {
   children: null,
   allowMobileBlur: false,
-  className: '',
   encType: '',
   submit: Form.defaultSubmit,
   cssModule: {},

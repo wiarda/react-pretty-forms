@@ -26,4 +26,6 @@ IfActive.propTypes = {
   className: PropTypes.string,
 };
 
+IfActive._prettyType = 'IfActive';
+
 module.exports = React.memo(IfActive);

@@ -69,7 +69,7 @@ class FormCheckbox extends FormField {
   }
 }
 
-FormField.propTypes = {
+FormCheckbox.propTypes = {
   name: PropTypes.string.isRequired,
   value: PropTypes.string,
   label: PropTypes.string,
@@ -79,9 +79,11 @@ FormField.propTypes = {
   validationMessage: PropTypes.string,
 };
 
-FormField.defaultProps = {
+FormCheckbox.defaultProps = {
   value: 'Yes',
   name: 'checkbox',
 };
+
+FormCheckbox._prettyType = 'Checkbox';
 
 module.exports = FormCheckbox;

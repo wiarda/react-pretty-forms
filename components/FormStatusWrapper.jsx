@@ -21,4 +21,6 @@ FormStatusWrapper.defaultProps = {
   formState: 'active',
 };
 
+FormStatusWrapper._prettyType = 'StatusWrapper';
+
 module.exports = FormStatusWrapper;
