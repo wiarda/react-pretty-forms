@@ -28,6 +28,7 @@ const INPUT_TYPES = ['Field', 'File', 'Select', 'Checkbox'];
 // write tests
 // add documentation
 // other form input types (long text, etc)
+// refactor mobileBlur to avoid passing invalid props to native dom elements
 
 /**
  * title = the form's title text
@@ -144,8 +145,10 @@ class Form extends React.PureComponent {
     // pass on CSS modules
     childProps.styles = styles;
 
-    // mobileBlurSettings
-    childProps.mobileBlur = allowMobileBlur;
+    // mobileBlurSettings on RPF components
+    // if (wrapperType) {
+    //   childProps.mobileBlur = allowMobileBlur;
+    // }
 
     // pass on form state to Form State Components
     if (FORM_STATE_COMPONENTS.includes(wrapperType)) {
