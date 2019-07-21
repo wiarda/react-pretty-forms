@@ -21,8 +21,9 @@ class FormField extends React.PureComponent {
     this.defaultBlur = this.defaultBlur.bind(this);
     this.focusHandler = this.focusHandler.bind(this);
     this.inputRef = React.createRef();
-
-    this.isMobile = /iPhone|iPad|iPod|Android/i.test(window.navigator.userAgent);
+    if (typeof window !== 'undefined') {
+      this.isMobile = /iPhone|iPad|iPod|Android/i.test(window.navigator.userAgent);
+    }
     this.state = {
       isValid: true,
       validationMessage: this.getValidationMessage(),
