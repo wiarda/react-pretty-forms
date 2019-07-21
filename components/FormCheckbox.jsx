@@ -33,6 +33,7 @@ class FormCheckbox extends FormField {
       label = false,
       checked,
       value,
+      onChange,
     } = this.props;
 
     const { validationMessage, isValid } = this.state;
@@ -56,6 +57,7 @@ class FormCheckbox extends FormField {
             value={value}
             data-validity={isValid}
             onClick={this.clickHandler}
+            onChange={onChange}
           />
         </Label>
         <div
