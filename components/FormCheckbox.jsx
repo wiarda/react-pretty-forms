@@ -78,8 +78,10 @@ FormCheckbox.propTypes = {
   required: PropTypes.bool,
   initialValue: PropTypes.string,
   validator: PropTypes.func,
-  validationMessage: PropTypes.string,
-};
+  validationMessage: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.bool,
+  ]),};
 
 FormCheckbox.defaultProps = {
   value: 'Yes',

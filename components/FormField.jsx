@@ -43,6 +43,7 @@ class FormField extends React.PureComponent {
   getValidationMessage() {
     const { validationMessage, name, required } = this.props;
     if (validationMessage) return validationMessage;
+    if (validationMessage === false) return '';
 
     return selectDefaultValidityMessage(name, required);
   }
@@ -102,6 +103,8 @@ class FormField extends React.PureComponent {
       labelTextClassName = styles.prettyLabelText || 'pretty-label-text',
       labelClassName = styles.prettyLabel || 'pretty-label',
       label = false,
+      validationMessage: exclude,
+      ...remaining
     } = this.props;
     const { validationMessage, isValid, labelUp } = this.state;
 
@@ -109,6 +112,7 @@ class FormField extends React.PureComponent {
       <div
         className={rowClassName}
         style={type === 'hidden' ? hidden : {}}
+        {...remaining}
       >
         <Label
           className={labelClassName}
@@ -159,7 +163,10 @@ FormField.propTypes = {
   labelClassName: PropTypes.string,
   labelTextClassName: PropTypes.string,
   validator: PropTypes.func,
-  validationMessage: PropTypes.string,
+  validationMessage: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.bool,
+  ]),
 };
 
 FormField.defaultProps = {
