@@ -39,7 +39,7 @@ class FormNumber extends FormField {
           <input
             className={className}
             required={required}
-            type='number'
+            type="number"
             min={min}
             max={max}
             name={name}

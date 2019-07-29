@@ -6,20 +6,6 @@ const React = require('react');
 const PropTypes = require('prop-types');
 const { fetch } = require('whatwg-fetch');
 
-// const FormField = require('./FormField');
-// const FormFile = require('./FormFile');
-// const FormButton = require('./FormButton');
-// const FormSelectPretty = require('./FormSelect');
-// const FormCheckbox = require('./FormCheckbox');
-// const FormStatusWrapper = require('./FormStatusWrapper');
-
-// const IfResolved = require('./IfResolved');
-// const IfFailed = require('./IfFailed');
-// const IfSubmitting = require('./IfSubmitting');
-// const IfActive = require('./IfActive');
-
-// const INPUT_TYPES = [FormFile, FormField, FormSelectPretty, FormCheckbox];
-// const FORM_STATE_COMPONENTS = [FormStatusWrapper, IfResolved, IfFailed, IfSubmitting, IfActive];
 const FORM_STATE_COMPONENTS = ['StatusWrapper', 'IfResolved', 'IfFailed', 'IfSubmitting', 'IfActive'];
 const INPUT_TYPES = ['Field', 'File', 'Select', 'Checkbox'];
 
