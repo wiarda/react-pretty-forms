@@ -146,8 +146,8 @@ class FormField extends React.PureComponent {
 }
 
 FormField.propTypes = {
-  type: PropTypes.string,
   name: PropTypes.string.isRequired,
+  type: PropTypes.string,
   initialValue: PropTypes.oneOfType([
     PropTypes.string,
     PropTypes.number,
