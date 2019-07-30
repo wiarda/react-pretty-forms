@@ -1,0 +1,169 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Field component Accepts custom styles 1`] = `
+<div
+  className="pretty-row"
+  style={Object {}}
+>
+  <label
+    className="pretty-label"
+    data-active={false}
+    data-validity={true}
+    htmlFor="test"
+  >
+    <span
+      className="pretty-label-text"
+      data-active={false}
+    >
+      This is a test field
+    </span>
+    <input
+      className="test-class"
+      data-validity={true}
+      name="test"
+      onBlur={[Function]}
+      onFocus={[Function]}
+      required={true}
+      type="text"
+    />
+  </label>
+  <div
+    className="pretty-validation"
+    data-validity={true}
+  >
+    
+  </div>
+</div>
+`;
+
+exports[`Field component Matches snapshot 1`] = `
+<div
+  className="pretty-row"
+  style={Object {}}
+>
+  <input
+    className="pretty-input"
+    data-validity={true}
+    name="email"
+    onBlur={[Function]}
+    onFocus={[Function]}
+    required={false}
+    type="text"
+  />
+  ;
+  <div
+    className="pretty-validation"
+    data-validity={true}
+  >
+    Please enter a valid email address
+  </div>
+</div>
+`;
+
+exports[`Field component Renders required field 1`] = `
+<div
+  className="pretty-row"
+  style={Object {}}
+>
+  <label
+    className="pretty-label"
+    data-active={false}
+    data-validity={true}
+    htmlFor="test"
+  >
+    <span
+      className="pretty-label-text"
+      data-active={false}
+    >
+      This is a test field
+    </span>
+    <input
+      className="pretty-input"
+      data-validity={true}
+      name="test"
+      onBlur={[Function]}
+      onFocus={[Function]}
+      required={true}
+      type="text"
+    />
+  </label>
+  <div
+    className="pretty-validation"
+    data-validity={true}
+  >
+    Please fill in this required field
+  </div>
+</div>
+`;
+
+exports[`Field component Renders required props 1`] = `
+<div
+  className="pretty-row"
+  style={Object {}}
+>
+  <label
+    className="pretty-label"
+    data-active={false}
+    data-validity={true}
+    htmlFor="test"
+  >
+    <span
+      className="pretty-label-text"
+      data-active={false}
+    >
+      This is a test field
+    </span>
+    <input
+      className="pretty-input"
+      data-validity={true}
+      name="test"
+      onBlur={[Function]}
+      onFocus={[Function]}
+      required={false}
+      type="text"
+    />
+  </label>
+  <div
+    className="pretty-validation"
+    data-validity={true}
+  >
+    
+  </div>
+</div>
+`;
+
+exports[`Field component Renders without a validation message 1`] = `
+<div
+  className="pretty-row"
+  style={Object {}}
+>
+  <label
+    className="pretty-label"
+    data-active={false}
+    data-validity={true}
+    htmlFor="test"
+  >
+    <span
+      className="pretty-label-text"
+      data-active={false}
+    >
+      This is a test field
+    </span>
+    <input
+      className="pretty-input"
+      data-validity={true}
+      name="test"
+      onBlur={[Function]}
+      onFocus={[Function]}
+      required={true}
+      type="text"
+    />
+  </label>
+  <div
+    className="pretty-validation"
+    data-validity={true}
+  >
+    
+  </div>
+</div>
+`;
