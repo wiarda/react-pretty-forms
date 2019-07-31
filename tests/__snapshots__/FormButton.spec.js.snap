@@ -1,0 +1,48 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Button component Accepts custom styles 1`] = `
+<input
+  className="test-class"
+  style={Object {}}
+  type="button"
+  value="Register"
+/>
+`;
+
+exports[`Button component Accepts custom submit handler 1`] = `
+<input
+  className="pretty-button"
+  onClick={[Function]}
+  style={Object {}}
+  type="button"
+  value="Register"
+/>
+`;
+
+exports[`Button component Accepts data props 1`] = `
+<input
+  className="test-class"
+  data-test="test"
+  style={Object {}}
+  type="button"
+  value="Register"
+/>
+`;
+
+exports[`Button component Matches snapshot 1`] = `
+<input
+  className="pretty-button"
+  style={Object {}}
+  type="submit"
+  value="Submit"
+/>
+`;
+
+exports[`Button component Renders required props 1`] = `
+<input
+  className="pretty-button"
+  style={Object {}}
+  type="button"
+  value="Register"
+/>
+`;

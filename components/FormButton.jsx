@@ -6,9 +6,9 @@ function FormButton(props) {
   const {
     value,
     submitHandler,
-    type,
     styles,
     style,
+    type,
     className = styles.prettyButton || 'pretty-button',
     ...remainingProps
   } = props;
