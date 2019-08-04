@@ -1,7 +1,7 @@
 {
   "name": "react-pretty-forms",
-  "version": "0.0.1",
-  "description": "Easy to style React forms that behave well in no-JS environments.",
+  "version": "0.1.0",
+  "description": "Easy to style React forms that (with SSR) behave well in no-JS environments.",
   "main": "index.js",
   "scripts": {
     "test": "jest"

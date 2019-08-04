@@ -1,0 +1,93 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Button component Accepts custom styles 1`] = `
+<div
+  className="pretty-row"
+>
+  <input
+    className="test-class"
+    data-validity={true}
+    id="checkbox"
+    name="checkbox"
+    onClick={[Function]}
+    type="checkbox"
+    value="Register"
+  />
+  ;
+  <div
+    className="pretty-validation"
+    data-validity={true}
+  >
+    
+  </div>
+</div>
+`;
+
+exports[`Button component Accepts data props 1`] = `
+<div
+  className="pretty-row"
+>
+  <input
+    className="test-class"
+    data-validity={true}
+    id="checkbox"
+    name="checkbox"
+    onClick={[Function]}
+    type="checkbox"
+    value="Register"
+  />
+  ;
+  <div
+    className="pretty-validation"
+    data-validity={true}
+  >
+    
+  </div>
+</div>
+`;
+
+exports[`Button component Matches snapshot 1`] = `
+<div
+  className="pretty-row"
+>
+  <input
+    className="pretty-checkbox"
+    data-validity={true}
+    id="checkbox"
+    name="checkbox"
+    onClick={[Function]}
+    type="checkbox"
+    value="Yes"
+  />
+  ;
+  <div
+    className="pretty-validation"
+    data-validity={true}
+  >
+    
+  </div>
+</div>
+`;
+
+exports[`Button component Renders required props 1`] = `
+<div
+  className="pretty-row"
+>
+  <input
+    className="pretty-checkbox"
+    data-validity={true}
+    id="Subscribe"
+    name="Subscribe"
+    onClick={[Function]}
+    type="checkbox"
+    value="Yes"
+  />
+  ;
+  <div
+    className="pretty-validation"
+    data-validity={true}
+  >
+    
+  </div>
+</div>
+`;
