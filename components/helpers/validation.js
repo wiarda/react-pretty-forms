@@ -1,12 +1,8 @@
-import validator from 'validator';
-
-// validation helpers
-
-export function isValidEmail(value) {
-  return validator.isEmail(value);
+function isValidEmail(value) {
+  return /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(value);
 }
 
-export function isValidEntry(value) {
+function isValidEntry(value) {
   return String(value).length >= 1;
 }
 
@@ -16,7 +12,7 @@ export function isValidEntry(value) {
  * @param {*} required
  * @param {*} value
  */
-export function defaultValidator(name, value, required = false) {
+function defaultValidator(name, value, required = false) {
   switch (name) {
     case 'email':
       return isValidEmail(value);
@@ -26,7 +22,7 @@ export function defaultValidator(name, value, required = false) {
   }
 }
 
-export function selectDefaultValidityMessage(name, required) {
+function selectDefaultValidityMessage(name, required) {
   const INVALID_EMAIL = 'Please enter a valid email address';
   const INVALID_ENTRY = 'Please fill in this required field';
   const INVALID_CHECK = 'Please click to accept';
@@ -41,3 +37,7 @@ export function selectDefaultValidityMessage(name, required) {
   }
   return '';
 }
+
+module.exports = {
+  isValidEmail, isValidEntry, defaultValidator, selectDefaultValidityMessage,
+};
