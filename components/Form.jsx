@@ -27,6 +27,7 @@ class Form extends React.PureComponent {
     return fetch(action, {
       method: 'POST',
       body: JSON.stringify(formValues),
+      redirect: 'manual',
     });
   }
 
@@ -174,6 +175,7 @@ class Form extends React.PureComponent {
     // pass cookies as a form value b/c cloud fns strip cookies (other than __session) from req
     // eslint-disable-next-line no-undef
     formValues.cookie = document && document.cookie;
+    formValues.__protocol = 'fetch';
 
     // save current values
     this.saveFormInput(formValues);
