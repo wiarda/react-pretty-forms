@@ -61,6 +61,7 @@ class Form extends React.PureComponent {
     this.processChildren = this.processChildren.bind(this);
     this.generateRefs = this.generateRefs.bind(this);
     this.saveFormInput = this.saveFormInput.bind(this);
+    this.setFormState = this.setFormState.bind(this);
 
     // initiate form state
     this.state = { formState: 'active' };
@@ -84,6 +85,10 @@ class Form extends React.PureComponent {
       return this.initialValues;
     }
     return currentValues;
+  }
+
+  setFormState(type) {
+    this.setState({ formState: type });
   }
 
   saveFormInput(formValues = this.getInputValues()) {
@@ -186,7 +191,8 @@ class Form extends React.PureComponent {
     // submit
     const { action } = this.props;
     submit(action, formValues)
-      .then(() => {
+      .then(res => {
+        if (res === 'OVERRIDE') return;
         this.setState({ formState: 'resolved' });
       })
       .catch(() => {
