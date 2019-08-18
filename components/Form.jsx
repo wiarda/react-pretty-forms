@@ -1,6 +1,6 @@
 /* eslint-disable react/require-default-props */
 /* eslint-disable max-len */
-/* global window */
+/* global window document */
 
 const React = require('react');
 const PropTypes = require('prop-types');
@@ -8,13 +8,6 @@ const { fetch } = require('whatwg-fetch');
 
 const FORM_STATE_COMPONENTS = ['StatusWrapper', 'IfResolved', 'IfFailed', 'IfSubmitting', 'IfActive'];
 const INPUT_TYPES = ['Field', 'File', 'Select', 'Checkbox'];
-
-// hp:
-// default submit should handle file uploads
-// write tests
-// add documentation
-// other form input types (long text, etc)
-// refactor mobileBlur to avoid passing invalid props to native dom elements
 
 /**
  * title = the form's title text
@@ -52,8 +45,6 @@ class Form extends React.PureComponent {
 
   constructor(props) {
     super(props);
-
-    // methods
     this.submitHandler = this.submitHandler.bind(this);
     this.validateEntries = this.validateEntries.bind(this);
     this.getInputValues = this.getInputValues.bind(this);
@@ -63,10 +54,7 @@ class Form extends React.PureComponent {
     this.saveFormInput = this.saveFormInput.bind(this);
     this.setFormState = this.setFormState.bind(this);
 
-    // initiate form state
     this.state = { formState: 'active' };
-
-    // parse parameter values
     this.initialValues = Form.parseParameters();
 
     // generate refs for input fields
@@ -178,7 +166,6 @@ class Form extends React.PureComponent {
     const formValues = this.getInputValues();
 
     // pass cookies as a form value b/c cloud fns strip cookies (other than __session) from req
-    // eslint-disable-next-line no-undef
     formValues.cookie = document && document.cookie;
     formValues.__protocol = 'fetch';
 
