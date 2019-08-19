@@ -1,6 +1,8 @@
-/node_modules
-/.vscode
+node_modules
+coverage
+.vscode
+
+## configuration
 .eslintrc
 .prettierrc
 babel.config.js
-/coverage
