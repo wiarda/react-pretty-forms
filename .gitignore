@@ -3,3 +3,4 @@
 .eslintrc
 .prettierrc
 babel.config.js
+/coverage
