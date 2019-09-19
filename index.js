@@ -10,6 +10,8 @@ const IfResolved = require('./components/IfResolved');
 const IfFailed = require('./components/IfFailed');
 const IfSubmitting = require('./components/IfSubmitting');
 const IfActive = require('./components/IfActive');
+const RowBreak = require('./components/RowBreak');
+const TextArea = require('./components/TextArea');
 
 module.exports = {
   Form,
@@ -24,4 +26,6 @@ module.exports = {
   IfFailed,
   IfSubmitting,
   IfActive,
+  RowBreak,
+  TextArea,
 };
