@@ -7,7 +7,7 @@ const PropTypes = require('prop-types');
 const { fetch } = require('whatwg-fetch');
 
 const FORM_STATE_COMPONENTS = ['StatusWrapper', 'IfResolved', 'IfFailed', 'IfSubmitting', 'IfActive'];
-const INPUT_TYPES = ['Field', 'File', 'Select', 'Checkbox'];
+const INPUT_TYPES = ['Field', 'File', 'Select', 'Checkbox', 'TextArea'];
 
 /**
  * title = the form's title text
