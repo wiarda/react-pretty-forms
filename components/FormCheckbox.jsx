@@ -32,9 +32,13 @@ class FormCheckbox extends FormField {
       validationClassName = styles.prettyValidation || 'pretty-validation',
       label = false,
       checked,
+      // checkState = false,
       value,
       onChange,
     } = this.props;
+
+
+    console.log(checked)
 
     const { validationMessage, isValid } = this.state;
 
@@ -81,7 +85,8 @@ FormCheckbox.propTypes = {
   validationMessage: PropTypes.oneOfType([
     PropTypes.string,
     PropTypes.bool,
-  ]),};
+  ]),
+};
 
 FormCheckbox.defaultProps = {
   value: 'Yes',
