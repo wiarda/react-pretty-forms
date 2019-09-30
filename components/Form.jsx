@@ -53,6 +53,8 @@ class Form extends React.PureComponent {
     this.generateRefs = this.generateRefs.bind(this);
     this.saveFormInput = this.saveFormInput.bind(this);
     this.setFormState = this.setFormState.bind(this);
+    this.exposeRefs = this.exposeRefs.bind(this);
+    this.exposeRef = this.exposeRef.bind(this);
 
     this.state = { formState: 'active' };
     this.initialValues = Form.parseParameters();
@@ -186,6 +188,14 @@ class Form extends React.PureComponent {
         this.setState({ formState: 'failed' });
       });
     this.setState({ formState: 'submitting' });
+  }
+
+  exposeRefs() {
+    return this.inputRefs;
+  }
+
+  exposeRef(refName) {
+    return this.inputRefs && this.inputRefs[refName] && this.inputRefs[refName].current.inputRef.current;
   }
 
   render() {
