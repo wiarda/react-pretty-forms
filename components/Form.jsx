@@ -65,6 +65,9 @@ class Form extends React.PureComponent {
     this.fieldNames = [];
     this.formElementRef = React.createRef();
     React.Children.forEach(props.children, this.generateRefs);
+
+    // on-load custom code
+    if (props.loadEvent) props.loadEvent();
   }
 
   getInputValues() {
@@ -82,7 +85,6 @@ class Form extends React.PureComponent {
   setFormState(type) {
     this.setState({ formState: type });
   }
-
 
   getFormBoundingRect() {
     return this.formElementRef.current.getBoundingClientRect();
@@ -166,10 +168,18 @@ class Form extends React.PureComponent {
 
   submitHandler(e) {
     e.preventDefault();
+    const { action, successEvent, failEvent } = this.props;
 
     // check for validity
     const isFormValid = this.validateEntries();
-    if (!isFormValid) return;
+    if (!isFormValid) {
+      if (failEvent) {
+        // custom fail code here
+        failEvent({ Error: 'Invalid form inputs.' });
+      }
+      return;
+    }
+
 
     // gather form values for submission
     const formValues = this.getInputValues();
@@ -185,13 +195,16 @@ class Form extends React.PureComponent {
     const { submit = Form.defaultSubmit } = this.props;
 
     // submit
-    const { action } = this.props;
     submit(action, formValues)
       .then(res => {
+        if (successEvent) successEvent(); // custom success handling
         if (res === 'OVERRIDE') return;
         this.setState({ formState: 'resolved' });
       })
-      .catch(() => {
+      .catch((err) => {
+        if (failEvent) { // custom fail handling
+          failEvent({ Error: err });
+        }
         this.setState({ formState: 'failed' });
       });
     this.setState({ formState: 'submitting' });
@@ -239,6 +252,9 @@ Form.propTypes = {
   encType: PropTypes.string,
   cssModule: PropTypes.shape({}),
   children: PropTypes.node,
+  loadEvent: PropTypes.func,
+  successEvent: PropTypes.func,
+  failEvent: PropTypes.func,
 };
 
 Form.defaultProps = {
