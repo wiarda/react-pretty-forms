@@ -55,7 +55,7 @@ class Form extends React.PureComponent {
     this.setFormState = this.setFormState.bind(this);
     this.exposeRefs = this.exposeRefs.bind(this);
     this.exposeRef = this.exposeRef.bind(this);
-    this.getFormBoundingBox = this.getFormBoundingBox.bind(this);
+    this.getFormBoundingRect = this.getFormBoundingRect.bind(this);
 
     this.state = { formState: 'active' };
     this.initialValues = Form.parseParameters();
