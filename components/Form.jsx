@@ -55,6 +55,7 @@ class Form extends React.PureComponent {
     this.setFormState = this.setFormState.bind(this);
     this.exposeRefs = this.exposeRefs.bind(this);
     this.exposeRef = this.exposeRef.bind(this);
+    this.getFormBoundingBox = this.getFormBoundingBox.bind(this);
 
     this.state = { formState: 'active' };
     this.initialValues = Form.parseParameters();
@@ -62,6 +63,7 @@ class Form extends React.PureComponent {
     // generate refs for input fields
     this.inputRefs = {};
     this.fieldNames = [];
+    this.formElementRef = React.createRef();
     React.Children.forEach(props.children, this.generateRefs);
   }
 
@@ -79,6 +81,11 @@ class Form extends React.PureComponent {
 
   setFormState(type) {
     this.setState({ formState: type });
+  }
+
+
+  getFormBoundingRect() {
+    return this.formElementRef.current.getBoundingClientRect();
   }
 
   saveFormInput(formValues = this.getInputValues()) {
@@ -150,7 +157,7 @@ class Form extends React.PureComponent {
   }
 
   validateEntries() {
-    // check validity of inputs and return true if all pass
+    // return true if all input fields are valid
     return Object.values(this.inputRefs).reduce((acc, curr) => {
       const currentValidation = curr.current.validate();
       return acc && currentValidation;
@@ -215,6 +222,7 @@ class Form extends React.PureComponent {
           data-formstatus={formState}
           onChange={this.getInputValues}
           encType={encType}
+          ref={this.formElementRef}
         >
           {this.cloneChildren()}
         </form>
