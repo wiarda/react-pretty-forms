@@ -264,6 +264,7 @@ exports[`Form component Renders a full form 1`] = `
     </div>
     <div
       className="pretty-row"
+      required={true}
     >
       <label
         className="pretty-checkbox-label"
