@@ -15,7 +15,7 @@ import {
 
 describe('Form component', () => {
   test('Matches snapshot', () => {
-    const component = renderer.create(<Form />).toJSON();
+    const component = renderer.create(<Form action="blank" />).toJSON();
     expect(component).toMatchSnapshot();
   });
 
