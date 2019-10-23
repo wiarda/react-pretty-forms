@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Button component Accepts custom styles 1`] = `
+exports[`Checkbox component Accepts custom styles 1`] = `
 <div
   className="pretty-row"
 >
@@ -23,9 +23,10 @@ exports[`Button component Accepts custom styles 1`] = `
 </div>
 `;
 
-exports[`Button component Accepts data props 1`] = `
+exports[`Checkbox component Accepts data props 1`] = `
 <div
   className="pretty-row"
+  data-test="test"
 >
   <input
     className="test-class"
@@ -46,7 +47,7 @@ exports[`Button component Accepts data props 1`] = `
 </div>
 `;
 
-exports[`Button component Matches snapshot 1`] = `
+exports[`Checkbox component Matches snapshot 1`] = `
 <div
   className="pretty-row"
 >
@@ -69,7 +70,7 @@ exports[`Button component Matches snapshot 1`] = `
 </div>
 `;
 
-exports[`Button component Renders required props 1`] = `
+exports[`Checkbox component Renders required props 1`] = `
 <div
   className="pretty-row"
 >
