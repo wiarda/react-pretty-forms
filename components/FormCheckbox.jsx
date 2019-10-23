@@ -34,12 +34,13 @@ class FormCheckbox extends FormField {
       checked,
       value,
       onChange,
+      ...remaining
     } = this.props;
 
     const { validationMessage, isValid } = this.state;
 
     return (
-      <div className={rowClassName}>
+      <div className={rowClassName} {...remaining}>
         <Label
           htmlFor={name}
           label={label}
@@ -81,7 +82,8 @@ FormCheckbox.propTypes = {
   validationMessage: PropTypes.oneOfType([
     PropTypes.string,
     PropTypes.bool,
-  ]),};
+  ]),
+};
 
 FormCheckbox.defaultProps = {
   value: 'Yes',
