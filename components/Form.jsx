@@ -115,7 +115,7 @@ class Form extends React.PureComponent {
   }
 
   processChildren(child) {
-    const { cssModule: styles, allowMobileBlur } = this.props;
+    const { cssModule: styles } = this.props;
     const { type: { _prettyType: prettyType } } = child;
     const wrapperType = prettyType || (child.type.type && child.type.type._prettyType);
 
@@ -135,11 +135,6 @@ class Form extends React.PureComponent {
 
     // pass on CSS modules
     childProps.styles = styles;
-
-    // mobileBlurSettings on RPF components
-    // if (wrapperType) {
-    //   childProps.mobileBlur = allowMobileBlur;
-    // }
 
     // pass on form state to Form State Components
     if (FORM_STATE_COMPONENTS.includes(wrapperType)) {
