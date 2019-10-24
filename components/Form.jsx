@@ -67,7 +67,7 @@ class Form extends React.PureComponent {
     React.Children.forEach(props.children, this.generateRefs);
 
     // on-load custom code
-    if (props.loadEvent) props.loadEvent();
+    if (props.loadEvent) props.loadEvent(this);
   }
 
   getInputValues() {
