@@ -11,6 +11,7 @@ import {
   IfFailed,
   IfSubmitting,
   IfActive,
+  FormStatusWrapper,
 } from '../index';
 
 describe('Form component', () => {
@@ -145,9 +146,13 @@ describe('Form component', () => {
         loadEvent={instance => {
           instance.loadEvent = 'Loaded';
         }}
-        submitEvent={instance => {
-          instance.submitEvent = 'Submitted';
+        successEvent={instance => {
+          instance.successEvent = 'Submitted';
         }}
+        failEvent={instance => {
+          instance.failEvent = 'Failed';
+        }}
+        submit={() => Promise.resolve('OVERRIDE')}
       >
         <div>plain type</div>
         <IfActive>
@@ -173,6 +178,9 @@ describe('Form component', () => {
           <FormField type="hidden" name="source" initialValue="direct" />
           <FormButton type="submit" value="Book a Meeting" />
         </IfActive>
+        <FormStatusWrapper>
+          <div>Items here</div>
+        </FormStatusWrapper>
         <IfResolved>Resolved...</IfResolved>
         <IfSubmitting>Loading...</IfSubmitting>
         <IfFailed>Failed...</IfFailed>
@@ -258,5 +266,116 @@ describe('Form component', () => {
       checkbox: false,
       source: 'Gortok',
     });
+  });
+
+  const validForm = renderer
+    .create(
+      <Form
+        action="blank"
+        successEvent={instance => {
+          instance.successEvent = 'Submitted';
+        }}
+        submit={() => Promise.resolve('abc')}
+      >
+        <FormField type="text" name="first" label="First name*" required initialValue="Gortok" />
+      </Form>,
+      {
+        createNodeMock: element => {
+          if (element.type === 'input') {
+            return {
+              value: 'Gortok',
+            };
+          }
+          return {};
+        },
+      },
+    )
+    .getInstance();
+
+  const validFormOverride = renderer
+    .create(
+      <Form
+        action="blank"
+        successEvent={instance => {
+          instance.successEvent = 'Submitted';
+        }}
+        submit={() => Promise.resolve('OVERRIDE')}
+      >
+        <FormField type="text" name="first" label="First name*" required initialValue="Gortok" />
+      </Form>,
+      {
+        createNodeMock: element => {
+          if (element.type === 'input') {
+            return {
+              value: 'Gortok',
+            };
+          }
+          return {};
+        },
+      },
+    )
+    .getInstance();
+
+  test('validateEntries checks ref validations and returns a bool', () => {
+    expect(form2.validateEntries()).toBe(false);
+    expect(validForm.validateEntries()).toBe(true);
+  });
+
+  const mockEvent = {
+    preventDefault() {},
+  };
+
+  test('submitHandler - on fail handler runs', () => {
+    expect(form2.submitHandler(mockEvent)).toBe('Invalid submission');
+    expect(form2.failEvent).toBe('Failed');
+  });
+
+  test('submitHandler - on success handler runs', async () => {
+    const result = await validForm.submitHandler(mockEvent);
+    const resultOverride = await validFormOverride.submitHandler(mockEvent);
+
+    expect.assertions(3);
+    expect(result).toBe(undefined);
+    expect(validForm.successEvent).toBe('Submitted');
+    expect(resultOverride).toBe(undefined);
+  });
+
+  const validFormFailedSubmit = renderer
+    .create(
+      <Form
+        action="blank"
+        successEvent={instance => {
+          instance.successEvent = 'Submitted';
+        }}
+        failEvent={instance => {
+          instance.failEvent = 'Failed';
+        }}
+        submit={() => Promise.reject('abc')}
+      >
+        <FormField type="text" name="first" label="First name*" required initialValue="Gortok" />
+      </Form>,
+      {
+        createNodeMock: element => {
+          if (element.type === 'input') {
+            return {
+              value: 'Gortok',
+            };
+          }
+          return {};
+        },
+      },
+    )
+    .getInstance();
+
+  test('submitHandler - on submit failure handler runs', async () => {
+    const result = await validFormFailedSubmit.submitHandler(mockEvent);
+
+    // new Promise((resolve, reject) => {
+    //   resolve(validFormFailedSubmit.failEvent);
+    // });
+
+    expect.assertions(2);
+    expect(result).toBe(undefined);
+    expect(validFormFailedSubmit.failEvent).toBe('Failed');
   });
 });
