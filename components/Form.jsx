@@ -170,9 +170,9 @@ class Form extends React.PureComponent {
     if (!isFormValid) {
       if (failEvent) {
         // custom fail code here
-        failEvent({ Error: 'Invalid form inputs.' });
+        failEvent(this, { Error: 'Invalid form inputs.' });
       }
-      return;
+      return 'Invalid';
     }
 
 
@@ -190,19 +190,20 @@ class Form extends React.PureComponent {
     const { submit = Form.defaultSubmit } = this.props;
 
     // submit
-    submit(action, formValues)
+    const submission = submit(action, formValues)
       .then(res => {
-        if (successEvent) successEvent(); // custom success handling
+        if (successEvent) successEvent(this); // custom success handling
         if (res === 'OVERRIDE') return;
         this.setState({ formState: 'resolved' });
       })
       .catch((err) => {
         if (failEvent) { // custom fail handling
-          failEvent({ Error: err });
+          failEvent(this, { Error: err });
         }
         this.setState({ formState: 'failed' });
       });
     this.setState({ formState: 'submitting' });
+    return submission;
   }
 
   exposeRefs() {
