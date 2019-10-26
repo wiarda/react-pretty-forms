@@ -14,6 +14,9 @@ import {
   FormStatusWrapper,
 } from '../index';
 
+require('whatwg-fetch');
+
+
 describe('Form component', () => {
   test('Renders required props', () => {
     const component = renderer.create(<Form action="blank" />).toJSON();
