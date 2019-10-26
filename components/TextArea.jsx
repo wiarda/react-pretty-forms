@@ -1,14 +1,12 @@
 /* eslint-disable react/prop-types */
 /* eslint-disable react/require-default-props */
-/* global window */
 
 const React = require('react');
-const FormField = require('./FormField');
 const PropTypes = require('prop-types');
+const FormField = require('./FormField');
 const Label = require('./Label');
 const { hidden } = require('./helpers/styles');
 
-const { defaultValidator, selectDefaultValidityMessage } = require('./helpers/validation');
 
 class TextArea extends FormField {
   render() {
