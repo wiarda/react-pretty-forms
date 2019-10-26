@@ -4,7 +4,8 @@
 
 const React = require('react');
 const PropTypes = require('prop-types');
-if (typeof window !== "undefined") require('whatwg-fetch'); // polyfill for fetch
+// disabling polyfills -- allow users to implement instead
+// if (typeof window !== 'undefined') require('whatwg-fetch'); // polyfill for fetch
 
 const FORM_STATE_COMPONENTS = ['StatusWrapper', 'IfResolved', 'IfFailed', 'IfSubmitting', 'IfActive'];
 const INPUT_TYPES = ['Field', 'File', 'Select', 'Checkbox', 'TextArea'];

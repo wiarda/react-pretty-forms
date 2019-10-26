@@ -42,3 +42,7 @@ resolved
 API:
 
 Examples:
+
+Note on polyfills
+-safe to run in non-browser environments because fetch not called
+-on older browsers may need to polyfill fetch and promise
