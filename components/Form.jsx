@@ -1,10 +1,10 @@
 /* eslint-disable react/require-default-props */
 /* eslint-disable max-len */
-/* global window document */
+/* global window document  */
 
 const React = require('react');
 const PropTypes = require('prop-types');
-const { fetch } = require('whatwg-fetch');
+if (typeof window !== "undefined") require('whatwg-fetch'); // polyfill for fetch
 
 const FORM_STATE_COMPONENTS = ['StatusWrapper', 'IfResolved', 'IfFailed', 'IfSubmitting', 'IfActive'];
 const INPUT_TYPES = ['Field', 'File', 'Select', 'Checkbox', 'TextArea'];
