@@ -12,3 +12,5 @@
 
 1.3
 -mobile
+
+Need to include a polyfill for promises?
