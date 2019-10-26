@@ -15,11 +15,6 @@ import {
 } from '../index';
 
 describe('Form component', () => {
-  test('Matches snapshot', () => {
-    const component = renderer.create(<Form action="blank" />).toJSON();
-    expect(component).toMatchSnapshot();
-  });
-
   test('Renders required props', () => {
     const component = renderer.create(<Form action="blank" />).toJSON();
     expect(component).toMatchSnapshot();
@@ -28,60 +23,6 @@ describe('Form component', () => {
   test('Accepts custom styles', () => {
     const component = renderer
       .create(<Form action="blank" cssModule={{ abc: { fontSize: '1rem' } }} />)
-      .toJSON();
-    expect(component).toMatchSnapshot();
-  });
-
-  test('Renders a full form', () => {
-    const component = renderer
-      .create(
-        <Form action="blank">
-          <div>plain type</div>
-          <IfActive>
-            <FormSelect
-              required
-              name="salutation"
-              label="Preferred salutation"
-              defaultValue="unselected"
-            >
-              <option value="">-</option>
-              <option value="Dr.">Dr.</option>
-              <option value="Prof.">Prof.</option>
-            </FormSelect>
-            <FormField
-              type="text"
-              name="first"
-              label="First name*"
-              required
-              initialValue="Gortok"
-            />
-            <FormField type="text" name="last" label="Last name*" required initialValue="Hamfist" />
-            <FormField type="text" name="role" label="Job Title" />
-            <FormField type="text" name="institution" label="Institution*" required />
-            <FormField type="email" name="email" label="Email*" required />
-            <FormCheckbox
-              label="Here is a rather long label that might cause some clipping issues"
-              required
-            />
-            <FormField type="hidden" name="source" initialValue="direct" />
-            <FormButton type="submit" value="Book a Meeting" />
-          </IfActive>
-          <IfResolved>Resolved...</IfResolved>
-          <IfSubmitting>Loading...</IfSubmitting>
-          <IfFailed>Failed...</IfFailed>
-        </Form>,
-        {
-          createNodeMock: element => {
-            if (element.type === 'select') {
-              return {
-                current: {
-                  value: 'test value',
-                },
-              };
-            }
-          },
-        },
-      )
       .toJSON();
     expect(component).toMatchSnapshot();
   });
@@ -110,7 +51,13 @@ describe('Form component', () => {
             <option value="Dr.">Dr.</option>
             <option value="Prof.">Prof.</option>
           </FormSelect>
-          <FormField type="text" name="first" label="First name*" required initialValue="Gortok" />
+          <FormField
+            type="text"
+            name="first"
+            label="First name*"
+            required
+            initialValue="Mickey mouse"
+          />
           <FormField type="text" name="last" label="Last name*" required initialValue="Hamfist" />
           <FormField type="text" name="role" label="Job Title" />
           <FormField type="text" name="institution" label="Institution*" required />
@@ -166,7 +113,13 @@ describe('Form component', () => {
             <option value="Dr.">Dr.</option>
             <option value="Prof.">Prof.</option>
           </FormSelect>
-          <FormField type="text" name="first" label="First name*" required initialValue="Gortok" />
+          <FormField
+            type="text"
+            name="first"
+            label="First name*"
+            required
+            initialValue="Mickey mouse"
+          />
           <FormField type="text" name="last" label="Last name*" required initialValue="Hamfist" />
           <FormField type="text" name="role" label="Job Title" />
           <FormField type="text" name="institution" label="Institution*" required />
@@ -194,7 +147,7 @@ describe('Form component', () => {
           }
           if (element.type === 'input') {
             return {
-              value: 'Gortok',
+              value: 'Mickey mouse',
             };
           }
           if (element.type === 'form') {
@@ -233,13 +186,13 @@ describe('Form component', () => {
     expect(form.getInputValues()).toEqual({});
     expect(form2.getInputValues()).toEqual({
       salutation: 'test value',
-      first: 'Gortok',
-      last: 'Gortok',
-      role: 'Gortok',
-      institution: 'Gortok',
-      email: 'Gortok',
+      first: 'Mickey mouse',
+      last: 'Mickey mouse',
+      role: 'Mickey mouse',
+      institution: 'Mickey mouse',
+      email: 'Mickey mouse',
       checkbox: false,
-      source: 'Gortok',
+      source: 'Mickey mouse',
     });
   });
 
@@ -258,13 +211,13 @@ describe('Form component', () => {
     form2.saveFormInput();
     expect(form2.initialValues).toEqual({
       salutation: 'test value',
-      first: 'Gortok',
-      last: 'Gortok',
-      role: 'Gortok',
-      institution: 'Gortok',
-      email: 'Gortok',
+      first: 'Mickey mouse',
+      last: 'Mickey mouse',
+      role: 'Mickey mouse',
+      institution: 'Mickey mouse',
+      email: 'Mickey mouse',
       checkbox: false,
-      source: 'Gortok',
+      source: 'Mickey mouse',
     });
   });
 
@@ -277,13 +230,19 @@ describe('Form component', () => {
         }}
         submit={() => Promise.resolve('abc')}
       >
-        <FormField type="text" name="first" label="First name*" required initialValue="Gortok" />
+        <FormField
+          type="text"
+          name="first"
+          label="First name*"
+          required
+          initialValue="Mickey mouse"
+        />
       </Form>,
       {
         createNodeMock: element => {
           if (element.type === 'input') {
             return {
-              value: 'Gortok',
+              value: 'Mickey mouse',
             };
           }
           return {};
@@ -301,13 +260,19 @@ describe('Form component', () => {
         }}
         submit={() => Promise.resolve('OVERRIDE')}
       >
-        <FormField type="text" name="first" label="First name*" required initialValue="Gortok" />
+        <FormField
+          type="text"
+          name="first"
+          label="First name*"
+          required
+          initialValue="Mickey mouse"
+        />
       </Form>,
       {
         createNodeMock: element => {
           if (element.type === 'input') {
             return {
-              value: 'Gortok',
+              value: 'Mickey mouse',
             };
           }
           return {};
@@ -326,7 +291,7 @@ describe('Form component', () => {
   };
 
   test('submitHandler - on fail handler runs', () => {
-    expect(form2.submitHandler(mockEvent)).toBe('Invalid submission');
+    expect(form2.submitHandler(mockEvent)).toBe('Invalid');
     expect(form2.failEvent).toBe('Failed');
   });
 
@@ -352,13 +317,19 @@ describe('Form component', () => {
         }}
         submit={() => Promise.reject('abc')}
       >
-        <FormField type="text" name="first" label="First name*" required initialValue="Gortok" />
+        <FormField
+          type="text"
+          name="first"
+          label="First name*"
+          required
+          initialValue="Mickey mouse"
+        />
       </Form>,
       {
         createNodeMock: element => {
           if (element.type === 'input') {
             return {
-              value: 'Gortok',
+              value: 'Mickey mouse',
             };
           }
           return {};
@@ -370,12 +341,14 @@ describe('Form component', () => {
   test('submitHandler - on submit failure handler runs', async () => {
     const result = await validFormFailedSubmit.submitHandler(mockEvent);
 
-    // new Promise((resolve, reject) => {
-    //   resolve(validFormFailedSubmit.failEvent);
-    // });
-
     expect.assertions(2);
     expect(result).toBe(undefined);
     expect(validFormFailedSubmit.failEvent).toBe('Failed');
+  });
+
+  test('Form exposes refs to input values', async () => {
+    expect.assertions(2);
+    expect(validForm.exposeRefs().hasOwnProperty('first')).toBe(true);
+    expect(validForm.exposeRef('first')).toEqual({ value: 'Mickey mouse' });
   });
 });
