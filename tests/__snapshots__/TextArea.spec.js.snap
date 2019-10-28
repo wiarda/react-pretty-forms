@@ -1,0 +1,36 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`TextArea component tests Renders consistently 1`] = `
+<div
+  className="pretty-row"
+  style={Object {}}
+>
+  <label
+    className="pretty-label-textarea"
+    data-active={false}
+    data-validity={true}
+    htmlFor="Long"
+  >
+    <span
+      className="pretty-label-text-textarea"
+      data-active={false}
+    >
+      Essay
+    </span>
+  </label>
+  <textarea
+    className="pretty-textarea"
+    data-validity={true}
+    name="Long"
+    onBlur={[Function]}
+    onFocus={[Function]}
+    required={true}
+  />
+  <div
+    className="pretty-validation"
+    data-validity={true}
+  >
+    Please fill in this required field
+  </div>
+</div>
+`;
