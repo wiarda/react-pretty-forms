@@ -1,0 +1,36 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`File component tests Renders consistently 1`] = `
+<div
+  className="pretty-row"
+>
+  <label
+    className="pretty-label"
+    data-active={false}
+    data-validity={true}
+    htmlFor="Upload"
+  >
+    <span
+      className="pretty-label-text"
+      data-active={false}
+    >
+      contacts
+    </span>
+    <input
+      accept=".csv,.xls"
+      className="pretty-file"
+      data-validity={true}
+      multiple={false}
+      name="Upload"
+      required={true}
+      type="file"
+    />
+  </label>
+  <div
+    className="pretty-validation"
+    data-validity={true}
+  >
+    Please fill in this required field
+  </div>
+</div>
+`;
