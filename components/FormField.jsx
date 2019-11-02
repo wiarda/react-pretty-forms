@@ -21,6 +21,8 @@ class FormField extends React.PureComponent {
     this.defaultBlur = this.defaultBlur.bind(this);
     this.focusHandler = this.focusHandler.bind(this);
     this.inputRef = React.createRef();
+    this.imperativelySetValue = this.imperativelySetValue.bind(this);
+
     if (typeof window !== 'undefined') {
       this.isMobile = /iPhone|iPad|iPod|Android/i.test(window.navigator.userAgent);
     }
@@ -88,6 +90,13 @@ class FormField extends React.PureComponent {
     if (!mobileBlur && this.isMobile) return;
 
     this.defaultBlur();
+  }
+
+  imperativelySetValue(value) {
+    if (this.inputRef.current) {
+      this.inputRef.current.value = value;
+      this.defaultBlur();
+    }
   }
 
   render() {
