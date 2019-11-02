@@ -6,6 +6,7 @@ function FormButton(props) {
   const {
     value,
     submitHandler,
+    onClick,
     styles,
     style,
     type,
@@ -18,7 +19,10 @@ function FormButton(props) {
       type={type}
       className={className}
       value={value}
-      onClick={submitHandler}
+      onClick={(e) => {
+        if (onClick) onClick(e);
+        submitHandler(e);
+      }}
       style={style}
       {...remainingProps}
     />
