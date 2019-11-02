@@ -34,6 +34,7 @@ class FormCheckbox extends FormField {
       checked,
       value,
       onChange,
+      initialValue,
       ...remaining
     } = this.props;
 
