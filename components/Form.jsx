@@ -55,7 +55,8 @@ class Form extends React.PureComponent {
     this.saveFormInput = this.saveFormInput.bind(this);
     this.setFormState = this.setFormState.bind(this);
     this.exposeRefs = this.exposeRefs.bind(this);
-    this.exposeRef = this.exposeRef.bind(this);
+    this.exposeFieldRef = this.exposeFieldRef.bind(this);
+    this.exposeFieldInputRef = this.exposeFieldInputRef.bind(this);
     this.getFormBoundingRect = this.getFormBoundingRect.bind(this);
 
     this.state = { formState: 'active' };
@@ -211,8 +212,12 @@ class Form extends React.PureComponent {
     return this.inputRefs;
   }
 
-  exposeRef(refName) {
-    return this.inputRefs && this.inputRefs[refName] && this.inputRefs[refName].current.inputRef.current;
+  exposeFieldRef(fieldName) {
+    return this.inputRefs && this.inputRefs[fieldName] && this.inputRefs[fieldName].current;
+  }
+
+  exposeFieldInputRef(fieldName) {
+    return this.inputRefs && this.inputRefs[fieldName] && this.inputRefs[fieldName].current.inputRef.current;
   }
 
   render() {
