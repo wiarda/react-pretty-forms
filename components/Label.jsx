@@ -23,7 +23,7 @@ function Label({
   }
   return (
     <React.Fragment>
-      {children};
+      {children}
     </React.Fragment>
   );
 }
